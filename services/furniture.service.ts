@@ -16,6 +16,8 @@ interface FurnitureRow {
   height_cm: number | null;
   brands: { name: string } | null;
   categories: { name: string } | null;
+  style?: string[] | null;
+  room_type?: string[] | null;
 }
 
 function toFurniture(row: FurnitureRow): Furniture {
@@ -44,7 +46,10 @@ interface MatchParams {
   limit?: number;
 }
 
-/** Furniture matching a style + room type, within budget — used by AI Studio. */
+/**
+ * Furniture matching a style + room type,
+ * within budget — used by AI Studio.
+ */
 export async function getMatchedFurniture({
   style,
   roomType,
@@ -54,14 +59,37 @@ export async function getMatchedFurniture({
   let query = supabase
     .from("furniture")
     .select(
-      "id, name, description, price, currency, image_url, product_url, width_cm, depth_cm, height_cm, brands(name), categories(name), style, room_type"
+      `
+        id,
+        name,
+        description,
+        price,
+        currency,
+        image_url,
+        product_url,
+        width_cm,
+        depth_cm,
+        height_cm,
+        brands(name),
+        categories(name),
+        style,
+        room_type
+      `
     )
     .order("price", { ascending: true })
     .limit(limit);
 
-  if (style) query = query.contains("style", [style]);
-  if (roomType) query = query.contains("room_type", [roomType]);
-  if (typeof maxBudget === "number") query = query.lte("price", maxBudget);
+  if (style) {
+    query = query.contains("style", [style]);
+  }
+
+  if (roomType) {
+    query = query.contains("room_type", [roomType]);
+  }
+
+  if (typeof maxBudget === "number") {
+    query = query.lte("price", maxBudget);
+  }
 
   const { data, error } = await query;
 
@@ -83,24 +111,68 @@ export interface CatalogFilters {
   sort?: "price_asc" | "price_desc" | "newest";
 }
 
-/** Furniture for the public /catalog page — plain browse + filter, no style/room requirement. */
+/**
+ * Furniture for the public /catalog page.
+ *
+ * Category filtering uses an INNER JOIN so that
+ * categories.name filtering works correctly.
+ */
 export async function getFilteredFurniture(
   filters: CatalogFilters = {}
 ): Promise<Furniture[]> {
   let query = supabase
     .from("furniture")
     .select(
-      "id, name, description, price, currency, image_url, product_url, width_cm, depth_cm, height_cm, brands(name), categories(name)"
+      `
+        id,
+        name,
+        description,
+        price,
+        currency,
+        image_url,
+        product_url,
+        width_cm,
+        depth_cm,
+        height_cm,
+        brands(name),
+        categories!inner(name)
+      `
     );
 
-  if (filters.category) query = query.eq("categories.name", filters.category);
-  if (filters.style) query = query.contains("style", [filters.style]);
-  if (typeof filters.minPrice === "number") query = query.gte("price", filters.minPrice);
-  if (typeof filters.maxPrice === "number") query = query.lte("price", filters.maxPrice);
+  // CATEGORY FILTER
+  if (filters.category) {
+    query = query.eq("categories.name", filters.category);
+  }
 
-  if (filters.sort === "price_asc") query = query.order("price", { ascending: true });
-  else if (filters.sort === "price_desc") query = query.order("price", { ascending: false });
-  else query = query.order("created_at", { ascending: false });
+  // STYLE FILTER
+  if (filters.style) {
+    query = query.contains("style", [filters.style]);
+  }
+
+  // MINIMUM PRICE
+  if (typeof filters.minPrice === "number") {
+    query = query.gte("price", filters.minPrice);
+  }
+
+  // MAXIMUM PRICE
+  if (typeof filters.maxPrice === "number") {
+    query = query.lte("price", filters.maxPrice);
+  }
+
+  // SORT
+  if (filters.sort === "price_asc") {
+    query = query.order("price", {
+      ascending: true,
+    });
+  } else if (filters.sort === "price_desc") {
+    query = query.order("price", {
+      ascending: false,
+    });
+  } else {
+    query = query.order("created_at", {
+      ascending: false,
+    });
+  }
 
   const { data, error } = await query;
 
@@ -112,23 +184,58 @@ export async function getFilteredFurniture(
   return (data as unknown as FurnitureRow[]).map(toFurniture);
 }
 
-/** Distinct category and style values, for the catalog's filter sidebar. */
+// ---------- Filter options ----------
+
+/**
+ * Gets all categories and all unique styles
+ * available in the furniture catalog.
+ */
 export async function getFilterOptions(): Promise<{
   categories: string[];
   styles: string[];
 }> {
-  const [{ data: categoryRows }, { data: styleRows }] = await Promise.all([
-    supabase.from("categories").select("name"),
-    supabase.from("furniture").select("style"),
-  ]);
+  const [{ data: categoryRows, error: categoryError }, { data: styleRows, error: styleError }] =
+    await Promise.all([
+      supabase
+        .from("categories")
+        .select("name")
+        .order("name", { ascending: true }),
 
-  const categories = (categoryRows ?? []).map((r) => r.name as string);
+      supabase
+        .from("furniture")
+        .select("style"),
+    ]);
+
+  if (categoryError) {
+    console.error("getFilterOptions categories error:", categoryError);
+  }
+
+  if (styleError) {
+    console.error("getFilterOptions styles error:", styleError);
+  }
+
+  const categories = (categoryRows ?? []).map(
+    (row) => row.name as string
+  );
+
   const styleSet = new Set<string>();
+
   (styleRows ?? []).forEach((row) => {
-    (row.style as string[] | null)?.forEach((s) => styleSet.add(s));
+    const styles = row.style as string[] | null;
+
+    if (Array.isArray(styles)) {
+      styles.forEach((style) => {
+        if (style) {
+          styleSet.add(style);
+        }
+      });
+    }
   });
 
-  return { categories, styles: Array.from(styleSet) };
+  return {
+    categories,
+    styles: Array.from(styleSet).sort(),
+  };
 }
 
 // ---------- Admin: create furniture ----------
@@ -150,20 +257,30 @@ interface CreateFurnitureInput {
 }
 
 /**
- * Creates a new furniture item. Goes through /api/admin/furniture (not a
- * direct Supabase write) because the anon client only has read access —
- * writes need the service role key, which only exists server-side.
- * See app/api/admin/furniture/route.ts.
+ * Creates a new furniture item.
+ *
+ * Goes through /api/admin/furniture because the anon client
+ * only has read access. Writes require the service role key
+ * on the server.
  */
-export async function createFurniture(input: CreateFurnitureInput) {
+export async function createFurniture(
+  input: CreateFurnitureInput
+) {
   const res = await fetch("/api/admin/furniture", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(input),
   });
 
   if (!res.ok) {
-    const { error } = await res.json().catch(() => ({ error: "Unknown error" }));
+    const { error } = await res
+      .json()
+      .catch(() => ({
+        error: "Unknown error",
+      }));
+
     throw new Error(error);
   }
 

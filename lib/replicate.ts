@@ -1,22 +1,23 @@
-const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN!;
+const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN;
 
-// Your fine-tuned FLUX 2 LoRA model on Replicate, e.g. "your-username/lomar-interior-lora".
-// Set this once you've trained and pushed the LoRA. Until then, generation
-// falls straight through to the Kontext Pro fallback below.
-const PRIMARY_MODEL = process.env.REPLICATE_LORA_MODEL; // "owner/model-name"
+const PRIMARY_MODEL = process.env.REPLICATE_LORA_MODEL;
 
-// Confirmed public model on Replicate — used as fallback, and as the only
-// model until PRIMARY_MODEL is set.
 const FALLBACK_MODEL = "black-forest-labs/flux-kontext-pro";
 
 interface GenerateParams {
-  imageUrl: string; // publicly reachable URL (e.g. a Cloudinary URL)
-  style: string; // "scandinavian", "modern", ...
-  roomType?: string; // "living_room", "bedroom", ...
+  imageUrl: string;
+  style: string;
+  roomType?: string;
 }
 
-function buildPrompt({ style, roomType }: GenerateParams): string {
-  const room = roomType ? roomType.replace("_", " ") : "room";
+function buildPrompt({
+  style,
+  roomType,
+}: GenerateParams): string {
+  const room = roomType
+    ? roomType.replace("_", " ")
+    : "room";
+
   return (
     `Redesign this ${room} in a ${style} interior design style. ` +
     `Keep the room's structure, walls, windows, and doors exactly as they are. ` +
@@ -29,69 +30,190 @@ async function runReplicateModel(
   model: string,
   input: Record<string, unknown>
 ): Promise<string> {
-  const response = await fetch(
-    `https://api.replicate.com/v1/models/${model}/predictions`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${REPLICATE_API_TOKEN}`,
-        "Content-Type": "application/json",
-        // Ask Replicate to hold the connection open until the prediction
-        // finishes (works for most FLUX models, which run in a few seconds).
-        Prefer: "wait",
-      },
-      body: JSON.stringify({ input }),
-    }
-  );
+  if (!REPLICATE_API_TOKEN) {
+    throw new Error(
+      "REPLICATE_API_TOKEN is not configured"
+    );
+  }
+
+  const endpoint =
+    `https://api.replicate.com/v1/models/${model}/predictions`;
+
+  console.log("Replicate model:", model);
+  console.log("Replicate input:", {
+    ...input,
+    input_image: "[image URL hidden]",
+  });
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${REPLICATE_API_TOKEN}`,
+      "Content-Type": "application/json",
+      Prefer: "wait",
+    },
+    body: JSON.stringify({
+      input,
+    }),
+  });
+
+  const responseText = await response.text();
 
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Replicate ${model} request failed: ${response.status} ${text}`);
+    console.error(
+      "Replicate HTTP error:",
+      response.status,
+      responseText
+    );
+
+    throw new Error(
+      `Replicate request failed: ${response.status} ${responseText}`
+    );
   }
 
-  const prediction = await response.json();
+  let prediction: any;
 
-  if (prediction.status === "failed" || prediction.status === "canceled") {
-    throw new Error(`Replicate ${model} prediction ${prediction.status}: ${prediction.error}`);
+  try {
+    prediction = JSON.parse(responseText);
+  } catch {
+    throw new Error(
+      `Replicate returned invalid JSON: ${responseText}`
+    );
   }
 
-  // Some models return a single URL, others an array — normalize.
+  console.log("Replicate status:", prediction.status);
+  console.log("Replicate output:", prediction.output);
+
+  if (
+    prediction.status === "failed" ||
+    prediction.status === "canceled"
+  ) {
+    throw new Error(
+      `Replicate prediction ${prediction.status}: ${
+        prediction.error || "Unknown error"
+      }`
+    );
+  }
+
   const output = prediction.output;
-  const imageUrl = Array.isArray(output) ? output[0] : output;
+
+  if (!output) {
+    throw new Error(
+      "Replicate returned no image output"
+    );
+  }
+
+  let imageUrl: string | undefined;
+
+  // String output
+  if (typeof output === "string") {
+    imageUrl = output;
+  }
+
+  // Array output
+  if (
+    !imageUrl &&
+    Array.isArray(output) &&
+    output.length > 0
+  ) {
+    const first = output[0];
+
+    if (typeof first === "string") {
+      imageUrl = first;
+    } else if (
+      first &&
+      typeof first.url === "function"
+    ) {
+      imageUrl = first.url();
+    } else if (
+      first &&
+      typeof first.url === "string"
+    ) {
+      imageUrl = first.url;
+    }
+  }
+
+  // Object output
+  if (
+    !imageUrl &&
+    output &&
+    typeof output === "object"
+  ) {
+    if (typeof output.url === "string") {
+      imageUrl = output.url;
+    } else if (
+      typeof output.url === "function"
+    ) {
+      imageUrl = output.url();
+    }
+  }
 
   if (!imageUrl) {
-    throw new Error(`Replicate ${model} returned no output`);
+    throw new Error(
+      `Could not extract image URL from Replicate output: ${JSON.stringify(
+        output
+      )}`
+    );
   }
 
-  return imageUrl as string;
+  if (
+    !imageUrl.startsWith("http://") &&
+    !imageUrl.startsWith("https://")
+  ) {
+    throw new Error(
+      `Replicate returned invalid image URL: ${imageUrl}`
+    );
+  }
+
+  return imageUrl;
 }
 
-/**
- * Generates a redesigned room image. Tries the project's fine-tuned
- * FLUX 2 LoRA model first (if configured), and falls back to FLUX Kontext
- * Pro if that fails or isn't set up yet.
- */
-export async function generateRoomDesign(params: GenerateParams): Promise<{
+export async function generateRoomDesign(
+  params: GenerateParams
+): Promise<{
   imageUrl: string;
   modelUsed: string;
 }> {
   const prompt = buildPrompt(params);
 
+  // Try custom LoRA first
   if (PRIMARY_MODEL) {
     try {
-      const imageUrl = await runReplicateModel(PRIMARY_MODEL, {
-        prompt,
-        input_image: params.imageUrl,
-      });
-      return { imageUrl, modelUsed: PRIMARY_MODEL };
-    } catch (err) {
-      console.error("Primary LoRA model failed, falling back:", err);
+      const imageUrl = await runReplicateModel(
+        PRIMARY_MODEL,
+        {
+          prompt,
+          input_image: params.imageUrl,
+        }
+      );
+
+      return {
+        imageUrl,
+        modelUsed: PRIMARY_MODEL,
+      };
+    } catch (error) {
+      console.error(
+        "Primary LoRA failed. Falling back to Kontext Pro:",
+        error
+      );
     }
   }
 
-  const imageUrl = await runReplicateModel(FALLBACK_MODEL, {
-    prompt,
-    input_image: params.imageUrl,
-  });
-  return { imageUrl, modelUsed: FALLBACK_MODEL };
+  // Official FLUX Kontext Pro fallback
+  const imageUrl = await runReplicateModel(
+    FALLBACK_MODEL,
+    {
+      prompt,
+      input_image: params.imageUrl,
+      aspect_ratio: "match_input_image",
+      output_format: "jpg",
+      safety_tolerance: 2,
+      prompt_upsampling: false,
+    }
+  );
+
+  return {
+    imageUrl,
+    modelUsed: FALLBACK_MODEL,
+  };
 }

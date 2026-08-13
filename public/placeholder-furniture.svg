@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">
+  <rect width="800" height="800" fill="#F0F4F8"/>
+  <rect x="150" y="180" width="500" height="350" rx="24" fill="#D6E4F3"/>
+  <text x="400" y="370" text-anchor="middle" font-family="Arial" font-size="42" fill="#33475A">LOMAR SPACE</text>
+  <text x="400" y="430" text-anchor="middle" font-family="Arial" font-size="24" fill="#7EA6D8">Furniture</text>
+</svg>

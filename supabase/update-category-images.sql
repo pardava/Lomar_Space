@@ -1,28 +1,242 @@
--- Lomar Space — bulk update category images
--- Replace each 'PASTE_..._URL_HERE' with a real Unsplash image URL
--- (right-click a photo on unsplash.com -> Copy image address).
--- Then run this whole script once in Supabase SQL Editor.
+-- =========================================================
+-- UPDATE EXISTING FURNITURE CATEGORIES + IMAGE
+-- =========================================================
 
-update furniture set image_url = 'PASTE_SOFA_URL_HERE'
-where category_id = (select id from categories where name = 'sofa');
+-- KALLAX
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'shelf'
+  )
+WHERE name = 'KALLAX Shelving unit';
 
-update furniture set image_url = 'PASTE_CHAIR_URL_HERE'
-where category_id = (select id from categories where name = 'chair');
 
-update furniture set image_url = 'PASTE_TABLE_URL_HERE'
-where category_id = (select id from categories where name = 'table');
+-- POÄNG
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'chair'
+  )
+WHERE name = 'POÄNG Armchair';
 
-update furniture set image_url = 'PASTE_BED_URL_HERE'
-where category_id = (select id from categories where name = 'bed');
 
-update furniture set image_url = 'PASTE_SHELF_URL_HERE'
-where category_id = (select id from categories where name = 'shelf');
+-- LACK
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'table'
+  )
+WHERE name = 'LACK Coffee table';
 
-update furniture set image_url = 'PASTE_LAMP_URL_HERE'
-where category_id = (select id from categories where name = 'lamp');
 
-update furniture set image_url = 'PASTE_DECOR_URL_HERE'
-where category_id = (select id from categories where name = 'decor');
+-- HEMNES
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'bed'
+  )
+WHERE name = 'HEMNES Bed frame';
 
-update furniture set image_url = 'PASTE_RUG_URL_HERE'
-where category_id = (select id from categories where name = 'rug');
+
+-- RANARP
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'lamp'
+  )
+WHERE name = 'RANARP Floor lamp';
+
+
+-- BILLY
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'shelf'
+  )
+WHERE name = 'BILLY Bookcase';
+
+
+-- VITTSJÖ
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'table'
+  )
+WHERE name = 'VITTSJÖ Console table';
+
+
+-- EKET
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'shelf'
+  )
+WHERE name = 'EKET Wall cabinet';
+
+
+-- FLINTAN
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'chair'
+  )
+WHERE name = 'FLINTAN Office chair';
+
+
+-- STOCKHOLM
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'rug'
+  )
+WHERE name = 'STOCKHOLM Rug, flatwoven';
+
+
+-- FADO
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'lamp'
+  )
+WHERE name = 'FADO Table lamp';
+
+
+-- PAX
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'wardrobe'
+  )
+WHERE name = 'PAX Wardrobe';
+
+
+-- LANDSKRONA
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'sofa'
+  )
+WHERE name = 'LANDSKRONA Sofa';
+
+
+-- MALM
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'bed'
+  )
+WHERE name = 'MALM Bed frame';
+
+
+-- NORDVIKEN
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'table'
+  )
+WHERE name = 'NORDVIKEN Dining table';
+
+
+-- SINNERLIG
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'lamp'
+  )
+WHERE name = 'SINNERLIG Pendant lamp';
+
+
+-- SÖDERHAMN
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'sofa'
+  )
+WHERE name = 'SÖDERHAMN Sofa';
+
+
+-- JASSA
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'decor'
+  )
+WHERE name = 'JASSA Basket';
+
+
+-- FEJKA
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'decor'
+  )
+WHERE name = 'FEJKA Artificial plant';
+
+
+-- SANELA
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'decor'
+  )
+WHERE name = 'SANELA Curtains';
+
+
+-- SKOGSFRU
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'chair'
+  )
+WHERE name = 'SKOGSFRU Rattan chair';
+
+
+-- VELVET CHAIR
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'chair'
+  )
+WHERE name = 'Velvet accent armchair';
+
+
+-- BOTANICAL PRINTS
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'decor'
+  )
+WHERE name = 'Botanical print set of 2';
+
+
+-- KNIT THROW
+UPDATE furniture
+SET
+  image_url = '/placeholder-furniture.svg',
+  category_id = (
+    SELECT id FROM categories WHERE name = 'decor'
+  )
+WHERE name = 'Chunky knit throw blanket';
