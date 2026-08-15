@@ -37,7 +37,7 @@ export default function Hero() {
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <Link
-              href="/upload"
+              href="/ai"
               className="rounded-full bg-[#33475A] px-8 py-4 text-base font-semibold text-white transition hover:bg-[#7EA6D8]"
             >
               Design your room →
