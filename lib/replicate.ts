@@ -1,29 +1,166 @@
-const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN;
+const REPLICATE_API_TOKEN =
+  process.env.REPLICATE_API_TOKEN;
 
-const PRIMARY_MODEL = process.env.REPLICATE_LORA_MODEL;
+const PRIMARY_MODEL =
+  process.env.REPLICATE_LORA_MODEL;
 
-const FALLBACK_MODEL = "black-forest-labs/flux-kontext-pro";
+const FALLBACK_MODEL =
+  "black-forest-labs/flux-kontext-pro";
 
 interface GenerateParams {
   imageUrl: string;
   style: string;
   roomType?: string;
+  color?: string;
 }
 
 function buildPrompt({
   style,
   roomType,
+  color,
 }: GenerateParams): string {
   const room = roomType
-    ? roomType.replace("_", " ")
+    ? roomType.replaceAll("_", " ")
     : "room";
 
-  return (
-    `Redesign this ${room} in a ${style} interior design style. ` +
-    `Keep the room's structure, walls, windows, and doors exactly as they are. ` +
-    `Only change furniture, decor, colors, and lighting to match the ${style} style. ` +
-    `Photorealistic, high quality interior photography.`
-  );
+  const palette = color || "natural";
+
+  /*
+   * ROOM-SPECIFIC FURNITURE
+   */
+  let furniture = "";
+
+  switch (roomType) {
+    case "bedroom":
+      furniture = `
+      Add a realistic bed appropriate for the room.
+      Add bedside tables.
+      Add a wardrobe or dresser where appropriate.
+      Add bedside lighting.
+      Add a rug where appropriate.
+      `;
+
+      break;
+
+    case "kitchen":
+      furniture = `
+      Add realistic kitchen cabinetry.
+      Add a kitchen island or dining surface where appropriate.
+      Add dining chairs if appropriate.
+      Add realistic kitchen lighting.
+      Add tasteful kitchen accessories.
+      `;
+
+      break;
+
+    case "dining_room":
+      furniture = `
+      Add a dining table.
+      Add matching dining chairs.
+      Add a sideboard or console where appropriate.
+      Add dining room lighting.
+      Add tasteful decorative objects.
+      `;
+
+      break;
+
+    case "office":
+      furniture = `
+      Add a realistic work desk.
+      Add a comfortable office chair.
+      Add storage furniture.
+      Add a desk lamp.
+      Add tasteful office decoration.
+      `;
+
+      break;
+
+    case "bathroom":
+      furniture = `
+      Add realistic bathroom furniture and fixtures.
+      Add vanity storage.
+      Add mirrors.
+      Add appropriate lighting.
+      Add tasteful bathroom accessories.
+      `;
+
+      break;
+
+    default:
+      furniture = `
+      Add a large comfortable sofa.
+      Add a coffee table.
+      Add a decorative area rug.
+      Add side tables.
+      Add floor or table lighting.
+      Add indoor plants.
+      Add tasteful wall decoration.
+      `;
+  }
+
+  return `
+Transform this ${room} into a COMPLETE,
+FULLY FURNISHED ${style} interior.
+
+IMPORTANT:
+The room MUST NOT remain empty.
+
+ROOM TYPE:
+This is specifically a ${room}.
+Use furniture that belongs to a ${room}.
+
+FURNITURE:
+${furniture}
+
+COLOR PALETTE:
+Use ${palette} as the dominant color palette.
+Coordinate furniture, textiles, walls, decor and accessories
+with this color palette.
+Do not ignore the requested color.
+
+STYLE:
+The complete room must follow the ${style}
+interior design style.
+
+ARCHITECTURE:
+Keep the original architecture exactly the same.
+Keep walls.
+Keep windows.
+Keep doors.
+Keep ceiling.
+Keep floor.
+Keep camera position.
+Keep perspective.
+
+FURNITURE QUALITY:
+Use realistic high-quality furniture.
+Correct proportions.
+Furniture must physically sit on the floor.
+Realistic perspective.
+Realistic shadows.
+No floating furniture.
+No distorted furniture.
+No duplicate furniture.
+
+DESIGN:
+Create a cohesive professional interior.
+Use realistic materials.
+Use realistic lighting.
+Use natural shadows.
+Use tasteful decorations.
+
+FINAL RESULT:
+Photorealistic.
+High-end interior photography.
+Professionally designed.
+Fully furnished.
+Beautiful and realistic.
+
+MOST IMPORTANT:
+Do NOT return an empty room.
+The final image MUST visibly contain furniture
+appropriate for the selected room type.
+`;
 }
 
 async function runReplicateModel(
@@ -32,57 +169,77 @@ async function runReplicateModel(
 ): Promise<string> {
   if (!REPLICATE_API_TOKEN) {
     throw new Error(
-      "REPLICATE_API_TOKEN is not configured"
+      "REPLICATE_API_TOKEN is not configured."
     );
   }
 
   const endpoint =
     `https://api.replicate.com/v1/models/${model}/predictions`;
 
-  console.log("Replicate model:", model);
-  console.log("Replicate input:", {
-    ...input,
-    input_image: "[image URL hidden]",
-  });
+  console.log(
+    "================================"
+  );
 
-  const response = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${REPLICATE_API_TOKEN}`,
-      "Content-Type": "application/json",
-      Prefer: "wait",
-    },
-    body: JSON.stringify({
-      input,
-    }),
-  });
+  console.log(
+    "Replicate model:",
+    model
+  );
 
-  const responseText = await response.text();
+  console.log(
+    "================================"
+  );
+
+  const response = await fetch(
+    endpoint,
+    {
+      method: "POST",
+
+      headers: {
+        Authorization:
+          `Bearer ${REPLICATE_API_TOKEN}`,
+
+        "Content-Type":
+          "application/json",
+
+        Prefer: "wait",
+      },
+
+      body: JSON.stringify({
+        input,
+      }),
+    }
+  );
+
+  const responseText =
+    await response.text();
 
   if (!response.ok) {
     console.error(
-      "Replicate HTTP error:",
+      "Replicate error:",
       response.status,
       responseText
     );
 
     throw new Error(
-      `Replicate request failed: ${response.status} ${responseText}`
+      `Replicate request failed: ${response.status}`
     );
   }
 
   let prediction: any;
 
   try {
-    prediction = JSON.parse(responseText);
+    prediction =
+      JSON.parse(responseText);
   } catch {
     throw new Error(
-      `Replicate returned invalid JSON: ${responseText}`
+      "Replicate returned invalid JSON."
     );
   }
 
-  console.log("Replicate status:", prediction.status);
-  console.log("Replicate output:", prediction.output);
+  console.log(
+    "Replicate status:",
+    prediction.status
+  );
 
   if (
     prediction.status === "failed" ||
@@ -90,27 +247,29 @@ async function runReplicateModel(
   ) {
     throw new Error(
       `Replicate prediction ${prediction.status}: ${
-        prediction.error || "Unknown error"
+        prediction.error ||
+        "Unknown error"
       }`
     );
   }
 
-  const output = prediction.output;
+  const output =
+    prediction.output;
 
   if (!output) {
     throw new Error(
-      "Replicate returned no image output"
+      "Replicate returned no image output."
     );
   }
 
   let imageUrl: string | undefined;
 
-  // String output
-  if (typeof output === "string") {
+  if (
+    typeof output === "string"
+  ) {
     imageUrl = output;
   }
 
-  // Array output
   if (
     !imageUrl &&
     Array.isArray(output) &&
@@ -118,7 +277,9 @@ async function runReplicateModel(
   ) {
     const first = output[0];
 
-    if (typeof first === "string") {
+    if (
+      typeof first === "string"
+    ) {
       imageUrl = first;
     } else if (
       first &&
@@ -133,13 +294,14 @@ async function runReplicateModel(
     }
   }
 
-  // Object output
   if (
     !imageUrl &&
     output &&
     typeof output === "object"
   ) {
-    if (typeof output.url === "string") {
+    if (
+      typeof output.url === "string"
+    ) {
       imageUrl = output.url;
     } else if (
       typeof output.url === "function"
@@ -150,18 +312,20 @@ async function runReplicateModel(
 
   if (!imageUrl) {
     throw new Error(
-      `Could not extract image URL from Replicate output: ${JSON.stringify(
-        output
-      )}`
+      "Could not extract image URL from Replicate output."
     );
   }
 
   if (
-    !imageUrl.startsWith("http://") &&
-    !imageUrl.startsWith("https://")
+    !imageUrl.startsWith(
+      "http://"
+    ) &&
+    !imageUrl.startsWith(
+      "https://"
+    )
   ) {
     throw new Error(
-      `Replicate returned invalid image URL: ${imageUrl}`
+      "Replicate returned an invalid image URL."
     );
   }
 
@@ -174,46 +338,79 @@ export async function generateRoomDesign(
   imageUrl: string;
   modelUsed: string;
 }> {
-  const prompt = buildPrompt(params);
+  const prompt =
+    buildPrompt(params);
 
-  // Try custom LoRA first
+  console.log(
+    "ROOM:",
+    params.roomType
+  );
+
+  console.log(
+    "STYLE:",
+    params.style
+  );
+
+  console.log(
+    "COLOR:",
+    params.color
+  );
+
+  /*
+   * PRIMARY MODEL
+   */
   if (PRIMARY_MODEL) {
     try {
-      const imageUrl = await runReplicateModel(
-        PRIMARY_MODEL,
-        {
-          prompt,
-          input_image: params.imageUrl,
-        }
-      );
+      const imageUrl =
+        await runReplicateModel(
+          PRIMARY_MODEL,
+          {
+            prompt,
+            input_image:
+              params.imageUrl,
+          }
+        );
 
       return {
         imageUrl,
-        modelUsed: PRIMARY_MODEL,
+        modelUsed:
+          PRIMARY_MODEL,
       };
     } catch (error) {
       console.error(
-        "Primary LoRA failed. Falling back to Kontext Pro:",
+        "Primary model failed:",
         error
       );
     }
   }
 
-  // Official FLUX Kontext Pro fallback
-  const imageUrl = await runReplicateModel(
-    FALLBACK_MODEL,
-    {
-      prompt,
-      input_image: params.imageUrl,
-      aspect_ratio: "match_input_image",
-      output_format: "jpg",
-      safety_tolerance: 2,
-      prompt_upsampling: false,
-    }
-  );
+  /*
+   * FALLBACK
+   */
+  const imageUrl =
+    await runReplicateModel(
+      FALLBACK_MODEL,
+      {
+        prompt,
+
+        input_image:
+          params.imageUrl,
+
+        aspect_ratio:
+          "match_input_image",
+
+        output_format: "jpg",
+
+        safety_tolerance: 2,
+
+        prompt_upsampling: true,
+      }
+    );
 
   return {
     imageUrl,
-    modelUsed: FALLBACK_MODEL,
+
+    modelUsed:
+      FALLBACK_MODEL,
   };
 }

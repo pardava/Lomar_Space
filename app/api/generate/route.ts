@@ -1,54 +1,79 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { generateRoomDesign } from "@/lib/replicate";
 
-export const runtime = "nodejs";
-export const maxDuration = 60;
-
-export async function POST(req: NextRequest) {
+export async function POST(
+  request: Request
+) {
   try {
-    const body = await req.json();
+    const body = await request.json();
 
-    const { imageUrl, style, roomType } = body;
+    const imageUrl =
+      body.imageUrl;
 
-    console.log("=== GENERATE REQUEST ===");
-    console.log("imageUrl:", imageUrl);
-    console.log("style:", style);
-    console.log("roomType:", roomType);
+    const style =
+      body.style;
 
-    if (!imageUrl || !style) {
+    const roomType =
+      body.roomType;
+
+    const color =
+      body.color;
+
+    if (!imageUrl) {
       return NextResponse.json(
         {
-          error: "imageUrl and style are required",
+          error:
+            "imageUrl is required",
         },
-        { status: 400 }
+        {
+          status: 400,
+        }
       );
     }
 
-    const result = await generateRoomDesign({
-      imageUrl,
-      style,
-      roomType,
+    if (!style) {
+      return NextResponse.json(
+        {
+          error:
+            "style is required",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const result =
+      await generateRoomDesign({
+        imageUrl,
+        style,
+        roomType,
+        color,
+      });
+
+    return NextResponse.json({
+      imageUrl:
+        result.imageUrl,
+
+      modelUsed:
+        result.modelUsed,
     });
-
-    console.log("=== GENERATE RESULT ===");
-    console.log(result);
-
-    return NextResponse.json(result);
   } catch (error) {
-    console.error("=== GENERATE ERROR ===");
-    console.error(error);
-
-    const message =
-      error instanceof Error
-        ? error.message
-        : String(error);
+    console.error(
+      "POST /api/generate error:",
+      error
+    );
 
     return NextResponse.json(
       {
-        error: "Generation failed",
-        details: message,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Generation failed",
       },
-      { status: 500 }
+      {
+        status: 500,
+      }
     );
   }
 }

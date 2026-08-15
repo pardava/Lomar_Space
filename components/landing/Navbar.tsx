@@ -26,7 +26,7 @@ export default function Navbar() {
               place it at public/logo.svg — falls back gracefully to
               just the wordmark if the file isn't there yet. */}
           <Image
-            src="/logo.svg"
+            src="/logo.png"
             alt=""
             width={32}
             height={32}

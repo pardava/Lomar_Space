@@ -6,24 +6,32 @@ import type { Furniture } from "./types";
 interface FurnitureGridProps {
   items: Furniture[];
   loading?: boolean;
-  onRemove?: (id: string) => void;
   onAdd?: (item: Furniture) => void;
+  addedIds?: string[];
 }
 
 export default function FurnitureGrid({
   items,
-  loading,
-  onRemove,
+  loading = false,
   onAdd,
+  addedIds = [],
 }: FurnitureGridProps) {
   if (loading) {
     return (
-      <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
-        {Array.from({ length: 8 }).map((_, i) => (
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, index) => (
           <div
-            key={i}
-            className="aspect-square animate-pulse rounded-2xl bg-[#33475A]/5"
-          />
+            key={index}
+            className="overflow-hidden rounded-2xl border border-[#33475A]/8 bg-white"
+          >
+            <div className="aspect-square animate-pulse bg-[#E8EEF4]" />
+
+            <div className="space-y-3 p-4">
+              <div className="h-4 w-3/4 animate-pulse rounded bg-[#E8EEF4]" />
+              <div className="h-3 w-1/2 animate-pulse rounded bg-[#E8EEF4]" />
+              <div className="h-8 w-full animate-pulse rounded-full bg-[#E8EEF4]" />
+            </div>
+          </div>
         ))}
       </div>
     );
@@ -31,21 +39,27 @@ export default function FurnitureGrid({
 
   if (items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#33475A]/15 py-20 text-center">
+      <div className="rounded-2xl border border-dashed border-[#33475A]/15 bg-[#F0F4F8] px-6 py-12 text-center">
         <p className="text-sm font-medium text-[#33475A]">
-          No furniture matches yet
+          No matching furniture found.
         </p>
-        <p className="mt-1 text-sm text-[#8598A8]">
-          Try a different style or widen your budget.
+
+        <p className="mt-1 text-xs text-[#8598A8]">
+          Try another style, room type, color or budget.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {items.map((item) => (
-        <FurnitureCard key={item.id} item={item} onRemove={onRemove} onAdd={onAdd} />
+        <FurnitureCard
+          key={item.id}
+          item={item}
+          onAdd={onAdd}
+          isAdded={addedIds.includes(item.id)}
+        />
       ))}
     </div>
   );
