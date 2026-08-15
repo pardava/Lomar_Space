@@ -75,33 +75,18 @@ export async function getMatchedFurniture({
       `
     );
 
-  /*
-   * STYLE
-   */
   if (style) {
     query = query.contains("style", [style]);
   }
 
-  /*
-   * ROOM TYPE
-   */
   if (roomType) {
     query = query.contains("room_type", [roomType]);
   }
 
-  /*
-   * INDIVIDUAL PRODUCT PRICE
-   */
   if (typeof maxBudget === "number") {
     query = query.lte("price", maxBudget);
   }
 
-  /*
-   * Get more than needed first.
-   *
-   * Color is handled after Supabase because
-   * we want a fallback if exact color doesn't exist.
-   */
   query = query
     .order("price", { ascending: true })
     .limit(50);
@@ -115,9 +100,6 @@ export async function getMatchedFurniture({
 
   const rows = (data ?? []) as FurnitureRow[];
 
-  /*
-   * COLOR MATCHING
-   */
   let filteredRows = rows;
 
   if (color) {
@@ -132,18 +114,11 @@ export async function getMatchedFurniture({
       );
     });
 
-    /*
-     * If exact color exists, prefer it.
-     * Otherwise keep style + room results.
-     */
     if (exactColorRows.length > 0) {
       filteredRows = exactColorRows;
     }
   }
 
-  /*
-   * LIMIT
-   */
   filteredRows = filteredRows.slice(0, limit);
 
   return filteredRows.map(toFurniture);
@@ -274,4 +249,42 @@ export async function getFilterOptions(): Promise<{
     rooms: Array.from(roomSet),
     colors: Array.from(colorSet),
   };
+}
+
+/**
+ * Admin: create furniture
+ *
+ * Goes through /api/admin/furniture (not a direct Supabase write) because
+ * the anon client only has read access — writes need the service role
+ * key, which only exists server-side. See app/api/admin/furniture/route.ts.
+ */
+interface CreateFurnitureInput {
+  name: string;
+  description: string;
+  price: number;
+  width_cm: number;
+  depth_cm: number;
+  height_cm: number;
+  image_url: string;
+  product_url?: string;
+  brand_id: string;
+  category_id: string;
+  style: string[];
+  room_type: string[];
+  glb_url?: string;
+}
+
+export async function createFurniture(input: CreateFurnitureInput) {
+  const res = await fetch("/api/admin/furniture", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+
+  if (!res.ok) {
+    const { error } = await res.json().catch(() => ({ error: "Unknown error" }));
+    throw new Error(error);
+  }
+
+  return res.json();
 }
