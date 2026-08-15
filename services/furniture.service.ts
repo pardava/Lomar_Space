@@ -98,7 +98,7 @@ export async function getMatchedFurniture({
     return [];
   }
 
-  const rows = (data ?? []) as FurnitureRow[];
+  const rows = (data ?? []) as unknown as FurnitureRow[];
 
   let filteredRows = rows;
 
@@ -191,7 +191,7 @@ export async function getFilteredFurniture(
     return [];
   }
 
-  return (data as FurnitureRow[]).map(toFurniture);
+  return (data as unknown as FurnitureRow[]).map(toFurniture);
 }
 
 /**
