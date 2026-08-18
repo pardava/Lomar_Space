@@ -1,0 +1,4 @@
+sku,name,description,price,currency,image_url,product_url,brand_name,category_hint,width_cm,height_cm,depth_cm
+IKEA-SOF-001,KIVIK 3-seat sofa,Comfortable Scandinavian sofa in light grey fabric,799.00,EUR,https://example.com/images/kivik.jpg,https://www.ikea.com/de/en/p/kivik-sofa-12345?affiliate_id=XXXX,IKEA,sofa,228,83,95
+IKEA-BED-014,MALM bed frame,Minimalist bed frame in white oak veneer,279.00,EUR,https://example.com/images/malm.jpg,https://www.ikea.com/de/en/p/malm-bed-67890?affiliate_id=XXXX,IKEA,bed,209,100,156
+OTTO-CHR-022,Boho rattan armchair,Handwoven rattan accent chair,349.00,EUR,https://example.com/images/rattan-chair.jpg,https://www.otto.de/p/rattan-armchair-11223?awc=XXXX,Otto,armchair,70,85,75

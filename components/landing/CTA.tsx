@@ -21,7 +21,7 @@ export default function CTA() {
 
         <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
           <Link
-            href="/upload"
+            href="/ai"
             className="rounded-full bg-white px-7 py-3.5 text-sm font-semibold text-[#33475A] transition hover:bg-[#F2E6D6] hover:text-[#33475A]"
           >
             Start designing

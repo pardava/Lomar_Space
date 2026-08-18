@@ -43,7 +43,7 @@ export default function BeforeAfter() {
 
         <div className="mt-10 flex justify-center">
           <Link
-            href="/upload"
+            href="/ai"
             className="flex items-center gap-2 rounded-full bg-[#33475A] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#7EA6D8]"
           >
             Try it on your room
