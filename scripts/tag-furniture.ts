@@ -13,7 +13,11 @@
 // natija beradi, lekin sekinroq va pullik.
 // ============================================================
 
+import { config } from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
+
+// tsx orqali ishga tushirilganda .env.local avtomatik o'qilmaydi.
+config({ path: '.env.local' });
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,

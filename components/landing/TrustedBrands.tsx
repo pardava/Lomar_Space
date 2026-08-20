@@ -5,9 +5,9 @@ export default function TrustedBrands() {
   const stores = ["IKEA", "Otto", "JYSK", "Desenio", "Home Centre", "Artel"];
 
   return (
-    <section className="border-y border-[#33475A]/8 bg-white py-14">
+    <section className="border-y border-[#3A2119]/8 bg-white py-14">
       <div className="mx-auto max-w-7xl px-6">
-        <p className="mb-8 text-center text-sm font-medium uppercase tracking-[0.25em] text-[#8598A8]">
+        <p className="mb-8 text-center text-sm font-medium uppercase tracking-[0.25em] text-[#957662]">
           Built to shop from stores like
         </p>
 
@@ -15,7 +15,7 @@ export default function TrustedBrands() {
           {stores.map((store) => (
             <span
               key={store}
-              className="font-[family-name:var(--font-fraunces)] text-xl text-[#33475A]/40 transition hover:text-[#33475A]"
+              className="font-[family-name:var(--font-fraunces)] text-xl text-[#3A2119]/40 transition hover:text-[#3A2119]"
             >
               {store}
             </span>

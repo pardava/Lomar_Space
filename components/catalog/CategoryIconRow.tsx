@@ -42,12 +42,12 @@ export default function CategoryIconRow({
       >
         <span
           className={`flex h-16 w-16 items-center justify-center rounded-full transition ${
-            !selected ? "bg-[#7EA6D8] text-white" : "bg-white text-[#5B7186]"
+            !selected ? "bg-[#3A2119] text-white" : "bg-white text-[#957662]"
           }`}
         >
           <LayoutGrid className="h-6 w-6" />
         </span>
-        <span className="text-xs font-medium text-[#5B7186]">All</span>
+        <span className="text-xs font-medium text-[#957662]">All</span>
       </button>
 
       {categories.map((category) => {
@@ -61,12 +61,12 @@ export default function CategoryIconRow({
           >
             <span
               className={`flex h-16 w-16 items-center justify-center rounded-full transition ${
-                active ? "bg-[#7EA6D8] text-white" : "bg-white text-[#5B7186]"
+                active ? "bg-[#3A2119] text-white" : "bg-white text-[#957662]"
               }`}
             >
               <Icon className="h-6 w-6" />
             </span>
-            <span className="text-xs font-medium capitalize text-[#5B7186]">
+            <span className="text-xs font-medium capitalize text-[#957662]">
               {category}
             </span>
           </button>

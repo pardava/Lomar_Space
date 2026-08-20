@@ -41,9 +41,9 @@ export default function FurnitureCard({
       : null;
 
   return (
-    <article className="group overflow-hidden rounded-2xl border border-[#33475A]/8 bg-white transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#33475A]/10">
+    <article className="group overflow-hidden rounded-2xl border border-[#3A2119]/8 bg-white transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#3A2119]/10">
       {/* IMAGE */}
-      <div className="relative aspect-square overflow-hidden bg-[#F0F4F8]">
+      <div className="relative aspect-square overflow-hidden bg-[#D2E2EC]">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -53,11 +53,11 @@ export default function FurnitureCard({
         ) : (
           <div className="flex h-full items-center justify-center">
             <div className="text-center">
-              <div className="text-lg font-semibold text-[#33475A]">
+              <div className="text-lg font-semibold text-[#3A2119]">
                 LOMAR
               </div>
 
-              <div className="text-xs tracking-[0.25em] text-[#7EA6D8]">
+              <div className="text-xs tracking-[0.25em] text-[#3A2119]">
                 SPACE
               </div>
             </div>
@@ -66,14 +66,14 @@ export default function FurnitureCard({
 
         {/* BRAND */}
         {item.brand_name && (
-          <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-[#33475A] shadow-sm backdrop-blur">
+          <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-[#3A2119] shadow-sm backdrop-blur">
             {item.brand_name}
           </span>
         )}
 
         {/* ADDED */}
         {isAdded && (
-          <span className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-[#33475A] px-3 py-1 text-xs font-semibold text-white">
+          <span className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-[#3A2119] px-3 py-1 text-xs font-semibold text-white">
             <Check className="h-3 w-3" />
             Added
           </span>
@@ -82,13 +82,13 @@ export default function FurnitureCard({
 
       {/* INFO */}
       <div className="p-4">
-        <h3 className="line-clamp-2 min-h-[40px] text-sm font-semibold leading-snug text-[#33475A]">
+        <h3 className="line-clamp-2 min-h-[40px] text-sm font-semibold leading-snug text-[#3A2119]">
           {item.name}
         </h3>
 
         {/* RATING */}
         {typeof item.rating === "number" && (
-          <p className="mt-2 flex items-center gap-1 text-xs text-[#8598A8]">
+          <p className="mt-2 flex items-center gap-1 text-xs text-[#957662]">
             <Star className="h-3 w-3 fill-[#F2E6D6] text-[#F2E6D6]" />
 
             {item.rating.toFixed(1)}
@@ -100,16 +100,16 @@ export default function FurnitureCard({
 
         {/* BRAND */}
         {item.brand_name && (
-          <p className="mt-1 text-xs text-[#8598A8]">
+          <p className="mt-1 text-xs text-[#957662]">
             {item.brand_name}
           </p>
         )}
 
         {/* COLOR */}
         {item.color && (
-          <p className="mt-2 text-xs text-[#8598A8]">
+          <p className="mt-2 text-xs text-[#957662]">
             Color:{" "}
-            <span className="font-medium text-[#5B7186]">
+            <span className="font-medium text-[#957662]">
               {item.color}
             </span>
           </p>
@@ -117,7 +117,7 @@ export default function FurnitureCard({
 
         {/* DIMENSIONS */}
         {dimensions && (
-          <p className="mt-2 flex items-center gap-1 text-xs text-[#8598A8]">
+          <p className="mt-2 flex items-center gap-1 text-xs text-[#957662]">
             <Ruler className="h-3 w-3" />
             {dimensions}
           </p>
@@ -125,7 +125,7 @@ export default function FurnitureCard({
 
         {/* PRICE */}
         <div className="mt-4 flex items-center justify-between gap-3">
-          <span className="font-[family-name:var(--font-fraunces)] text-xl text-[#33475A]">
+          <span className="font-[family-name:var(--font-fraunces)] text-xl text-[#3A2119]">
             {item.currency ?? "EUR"}{" "}
             {item.price.toLocaleString("en-US", {
               minimumFractionDigits: 2,
@@ -138,7 +138,7 @@ export default function FurnitureCard({
               href={item.product_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 rounded-full bg-[#33475A] px-3 py-2 text-xs font-semibold text-white transition hover:bg-[#7EA6D8]"
+              className="flex items-center gap-1 rounded-full bg-[#3A2119] px-3 py-2 text-xs font-semibold text-white transition hover:bg-[#3A2119]"
             >
               View
               <ExternalLink className="h-3 w-3" />
@@ -152,7 +152,7 @@ export default function FurnitureCard({
             type="button"
             onClick={() => onAdd(item)}
             disabled={isAdded}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-[#33475A]/12 py-2.5 text-xs font-semibold text-[#33475A] transition hover:bg-[#33475A] hover:text-white disabled:cursor-default disabled:bg-[#F0F4F8] disabled:text-[#8598A8]"
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-[#3A2119]/12 py-2.5 text-xs font-semibold text-[#3A2119] transition hover:bg-[#3A2119] hover:text-white disabled:cursor-default disabled:bg-[#D2E2EC] disabled:text-[#957662]"
           >
             {isAdded ? (
               <>

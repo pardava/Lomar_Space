@@ -23,7 +23,7 @@ export default function MultiSelectChips({
 
   return (
     <div>
-      <p className="mb-2 text-sm font-medium text-[#33475A]">{label}</p>
+      <p className="mb-2 text-sm font-medium text-[#3A2119]">{label}</p>
       <div className="flex flex-wrap gap-2">
         {options.map((option) => {
           const active = value.includes(option);
@@ -34,8 +34,8 @@ export default function MultiSelectChips({
               onClick={() => toggle(option)}
               className={`rounded-full border px-4 py-1.5 text-sm capitalize transition ${
                 active
-                  ? "border-[#7EA6D8] bg-[#7EA6D8] text-white"
-                  : "border-[#33475A]/15 text-[#5B7186] hover:border-[#33475A]/30"
+                  ? "border-[#3A2119] bg-[#3A2119] text-white"
+                  : "border-[#3A2119]/15 text-[#957662] hover:border-[#3A2119]/30"
               }`}
             >
               {option.replace("_", " ")}

@@ -24,26 +24,26 @@ export default function BudgetPanel({
   );
 
   return (
-    <aside className="rounded-3xl border border-[#33475A]/8 bg-white p-6">
+    <aside className="rounded-3xl border border-[#3A2119]/8 bg-white p-6">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7EA6D8]">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#3A2119]">
           Your budget
         </p>
 
-        <h2 className="mt-2 font-[family-name:var(--font-fraunces)] text-2xl text-[#33475A]">
+        <h2 className="mt-2 font-[family-name:var(--font-fraunces)] text-2xl text-[#3A2119]">
           Design within your budget
         </h2>
 
-        <p className="mt-2 text-sm leading-6 text-[#8598A8]">
+        <p className="mt-2 text-sm leading-6 text-[#957662]">
           Choose how much you would like to spend on furniture for your room.
         </p>
       </div>
 
       <div className="mt-8">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-[#5B7186]">Budget</span>
+          <span className="text-sm text-[#957662]">Budget</span>
 
-          <span className="font-[family-name:var(--font-fraunces)] text-2xl text-[#33475A]">
+          <span className="font-[family-name:var(--font-fraunces)] text-2xl text-[#3A2119]">
             €{formattedBudget}
           </span>
         </div>
@@ -57,22 +57,22 @@ export default function BudgetPanel({
           onChange={(event) =>
             handleBudgetChange(Number(event.target.value))
           }
-          className="mt-5 w-full accent-[#7EA6D8]"
+          className="mt-5 w-full accent-[#3A2119]"
         />
 
-        <div className="mt-2 flex justify-between text-xs text-[#8598A8]">
+        <div className="mt-2 flex justify-between text-xs text-[#957662]">
           <span>€500</span>
           <span>€10,000</span>
         </div>
       </div>
 
       {estimatedItemCount !== undefined && estimatedItemCount > 0 && (
-        <div className="mt-6 rounded-2xl bg-[#F0F4F8] p-4">
-          <p className="text-sm font-medium text-[#33475A]">
+        <div className="mt-6 rounded-2xl bg-[#D2E2EC] p-4">
+          <p className="text-sm font-medium text-[#3A2119]">
             {estimatedItemCount} furniture pieces found
           </p>
 
-          <p className="mt-1 text-xs text-[#8598A8]">
+          <p className="mt-1 text-xs text-[#957662]">
             Matching your selected style and budget.
           </p>
         </div>
@@ -81,7 +81,7 @@ export default function BudgetPanel({
       <button
         type="button"
         onClick={() => onGenerate({ budget })}
-        className="mt-6 w-full rounded-full bg-[#33475A] py-3.5 text-sm font-semibold text-white transition hover:bg-[#7EA6D8]"
+        className="mt-6 w-full rounded-full bg-[#3A2119] py-3.5 text-sm font-semibold text-white transition hover:bg-[#3A2119]"
       >
         Update furniture
       </button>

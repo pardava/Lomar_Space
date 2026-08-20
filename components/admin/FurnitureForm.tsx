@@ -187,7 +187,7 @@ export default function FurnitureForm() {
 
       <button
         type="submit"
-        className="rounded-xl bg-[#33475A] px-6 py-3 text-white transition hover:bg-[#7EA6D8]"
+        className="rounded-xl bg-[#3A2119] px-6 py-3 text-white transition hover:bg-[#3A2119]"
       >
         Save Furniture
       </button>

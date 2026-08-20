@@ -22,7 +22,7 @@ export default function FurnitureGrid({
         {Array.from({ length: 6 }).map((_, index) => (
           <div
             key={index}
-            className="overflow-hidden rounded-2xl border border-[#33475A]/8 bg-white"
+            className="overflow-hidden rounded-2xl border border-[#3A2119]/8 bg-white"
           >
             <div className="aspect-square animate-pulse bg-[#E8EEF4]" />
 
@@ -39,12 +39,12 @@ export default function FurnitureGrid({
 
   if (items.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-[#33475A]/15 bg-[#F0F4F8] px-6 py-12 text-center">
-        <p className="text-sm font-medium text-[#33475A]">
+      <div className="rounded-2xl border border-dashed border-[#3A2119]/15 bg-[#D2E2EC] px-6 py-12 text-center">
+        <p className="text-sm font-medium text-[#3A2119]">
           No matching furniture found.
         </p>
 
-        <p className="mt-1 text-xs text-[#8598A8]">
+        <p className="mt-1 text-xs text-[#957662]">
           Try another style, room type, color or budget.
         </p>
       </div>

@@ -29,19 +29,19 @@ const badges = [
 
 export default function TrustBadges() {
   return (
-    <div className="grid grid-cols-2 gap-6 rounded-3xl border border-[#33475A]/8 bg-white p-8 md:grid-cols-4">
+    <div className="grid grid-cols-2 gap-6 rounded-3xl border border-[#3A2119]/8 bg-white p-8 md:grid-cols-4">
       {badges.map((badge) => {
         const Icon = badge.icon;
         return (
           <div key={badge.title} className="flex items-start gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#7EA6D8]/10 text-[#7EA6D8]">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#3A2119]/10 text-[#3A2119]">
               <Icon className="h-5 w-5" />
             </span>
             <div>
-              <p className="text-sm font-semibold text-[#33475A]">
+              <p className="text-sm font-semibold text-[#3A2119]">
                 {badge.title}
               </p>
-              <p className="mt-0.5 text-xs text-[#8598A8]">
+              <p className="mt-0.5 text-xs text-[#957662]">
                 {badge.description}
               </p>
             </div>

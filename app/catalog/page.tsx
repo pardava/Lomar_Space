@@ -48,13 +48,13 @@ export default function CatalogPage() {
 
       <main className="mx-auto max-w-7xl px-6 py-16">
         <div className="max-w-2xl">
-          <span className="text-sm font-semibold uppercase tracking-[0.2em] text-[#7EA6D8]">
+          <span className="text-sm font-semibold uppercase tracking-[0.2em] text-[#3A2119]">
             Marketplace
           </span>
-          <h1 className="mt-3 font-[family-name:var(--font-fraunces)] text-4xl text-[#33475A] md:text-5xl">
+          <h1 className="mt-3 font-[family-name:var(--font-fraunces)] text-4xl text-[#3A2119] md:text-5xl">
             Browse the full catalog
           </h1>
-          <p className="mt-4 text-lg text-[#5B7186]">
+          <p className="mt-4 text-lg text-[#957662]">
             Every piece here is real and shoppable — no AI design needed to
             explore.
           </p>
@@ -85,7 +85,7 @@ export default function CatalogPage() {
           />
 
           <div className="flex-1">
-            <p className="mb-5 text-sm text-[#8598A8]">
+            <p className="mb-5 text-sm text-[#957662]">
               {loading ? "Loading…" : `${items.length} items`}
             </p>
             <FurnitureGrid items={items} loading={loading} onAdd={addToCart} />

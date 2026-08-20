@@ -5,19 +5,21 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Brand Colors — Lomar Space blue/tan palette */
-  --color-primary: #7EA6D8;
-  --color-secondary: #33475A;
-  --color-accent: #F2E6D6;
-  --color-success: #6B9B7C;
+  --color-forest: #3A2119;
+  --color-forest-hover: #3A2119;
+  --color-cream: #D2E2EC;
+  --color-sand: #E7D9BC;
+  --color-sage: #8FA085;
+  --color-charcoal: #2B2B26;
+  --color-muted: #957662;
 
   /* Background */
-  --color-background: #F0F4F8;
+  --color-background: #D2E2EC;
   --color-surface: #FFFFFF;
 
   /* Text */
-  --color-text: #33475A;
-  --color-text-muted: #5B7186;
+  --color-text: #3A2119;
+  --color-text-muted: #957662;
 
   /* Border */
   --color-border: #D6E4F3;

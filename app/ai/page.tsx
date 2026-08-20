@@ -288,7 +288,7 @@ export default function AiStudioPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F0F4F8]">
+    <div className="flex min-h-screen bg-[#D2E2EC]">
       <Sidebar />
 
       <main className="flex-1 overflow-y-auto p-4 md:p-8">
@@ -341,25 +341,25 @@ export default function AiStudioPage() {
             {/* MATCHED FURNITURE */}
             {(matches.length > 0 ||
               matchesLoading) && (
-              <section className="rounded-3xl border border-[#33475A]/8 bg-white p-6 shadow-sm md:p-8">
+              <section className="rounded-3xl border border-[#3A2119]/8 bg-white p-6 shadow-sm md:p-8">
                 <div className="flex flex-wrap items-end justify-between gap-3">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7EA6D8]">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#3A2119]">
                       AI matched products
                     </p>
 
-                    <h2 className="mt-2 font-[family-name:var(--font-fraunces)] text-2xl text-[#33475A]">
+                    <h2 className="mt-2 font-[family-name:var(--font-fraunces)] text-2xl text-[#3A2119]">
                       Shop the look
                     </h2>
 
-                    <p className="mt-1 text-sm text-[#8598A8]">
+                    <p className="mt-1 text-sm text-[#957662]">
                       Real furniture from your
                       Supabase catalog.
                     </p>
                   </div>
 
                   {matches.length > 0 && (
-                    <span className="rounded-full bg-[#F0F4F8] px-3 py-1.5 text-xs font-medium text-[#33475A]">
+                    <span className="rounded-full bg-[#D2E2EC] px-3 py-1.5 text-xs font-medium text-[#3A2119]">
                       {matches.length} products
                     </span>
                   )}

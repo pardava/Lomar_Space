@@ -13,11 +13,16 @@
 // Kerak: npm install csv-parse @supabase/supabase-js tsx --save-dev
 // ============================================================
 
+import { config } from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import { parse } from 'csv-parse/sync';
 import fs from 'fs';
 import path from 'path';
 import type { RawFeedProduct, StyleTag, RoomTypeTag } from '../types/catalog';
+
+// tsx orqali ishga tushirilganda .env.local avtomatik o'qilmaydi,
+// shuning uchun qo'lda yuklaymiz (Next.js buni ichida o'zi qiladi).
+config({ path: '.env.local' });
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
