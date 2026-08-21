@@ -4,7 +4,6 @@ import TrustedBrands from "@/components/landing/TrustedBrands";
 import Features from "@/components/landing/Features";
 import HowItWorks from "@/components/landing/HowItWorks";
 import InteriorStyles from "@/components/landing/InteriorStyles";
-import BeforeAfter from "@/components/landing/BeforeAfter";
 import CTA from "@/components/landing/CTA";
 import Footer from "@/components/landing/Footer";
 
@@ -17,7 +16,6 @@ export default function Home() {
       <Features />
       <HowItWorks />
       <InteriorStyles />
-      <BeforeAfter />
       <CTA />
       <Footer />
     </>
