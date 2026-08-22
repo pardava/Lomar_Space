@@ -39,3 +39,6 @@ next-env.d.ts
 /.clerk/
 
 scripts/*.csv
+
+lomar-backup/
+lomar-backup-forest/
