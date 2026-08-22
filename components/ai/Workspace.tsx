@@ -16,30 +16,12 @@ const STYLES = [
 ];
 
 const ROOMS = [
-  {
-    value: "living_room",
-    label: "Living Room",
-  },
-  {
-    value: "bedroom",
-    label: "Bedroom",
-  },
-  {
-    value: "kitchen",
-    label: "Kitchen",
-  },
-  {
-    value: "dining_room",
-    label: "Dining Room",
-  },
-  {
-    value: "office",
-    label: "Office",
-  },
-  {
-    value: "bathroom",
-    label: "Bathroom",
-  },
+  { value: "living_room", label: "Living Room" },
+  { value: "bedroom", label: "Bedroom" },
+  { value: "kitchen", label: "Kitchen" },
+  { value: "dining_room", label: "Dining Room" },
+  { value: "office", label: "Office" },
+  { value: "bathroom", label: "Bathroom" },
 ];
 
 const COLOR_GROUPS = [
@@ -66,61 +48,61 @@ const COLOR_GROUPS = [
   {
     base: "green",
     label: "Green",
-    baseDot: "#15803D",
+    baseDot: "#6F8068",
     shades: [
-      { value: "green-light", label: "Sage green", dot: "#6FAE81" },
-      { value: "green", label: "Green", dot: "#15803D" },
-      { value: "green-dark", label: "Forest green", dot: "#0B4D24" },
+      { value: "green-light", label: "Sage green", dot: "#9AAB93" },
+      { value: "green", label: "Green", dot: "#6F8068" },
+      { value: "green-dark", label: "Forest green", dot: "#43503E" },
     ],
   },
   {
     base: "brown",
     label: "Brown",
-    baseDot: "#78350F",
+    baseDot: "#3A2119",
     shades: [
-      { value: "brown-light", label: "Light brown", dot: "#A9713F" },
-      { value: "brown", label: "Brown", dot: "#78350F" },
-      { value: "brown-dark", label: "Dark brown", dot: "#4A2009" },
+      { value: "brown-light", label: "Light brown", dot: "#6B4A38" },
+      { value: "brown", label: "Brown", dot: "#3A2119" },
+      { value: "brown-dark", label: "Dark brown", dot: "#241209" },
     ],
   },
   {
     base: "black",
     label: "Black",
-    baseDot: "#000000",
+    baseDot: "#20211F",
     shades: [
-      { value: "charcoal", label: "Charcoal", dot: "#3A3A3A" },
-      { value: "black", label: "Black", dot: "#000000" },
-      { value: "jet-black", label: "Jet black", dot: "#0A0A0A" },
+      { value: "charcoal", label: "Charcoal", dot: "#3A3B38" },
+      { value: "black", label: "Black", dot: "#20211F" },
+      { value: "jet-black", label: "Jet black", dot: "#0A0A09" },
     ],
   },
   {
     base: "terracotta",
     label: "Terracotta",
-    baseDot: "#C2410C",
+    baseDot: "#C47B5A",
     shades: [
-      { value: "terracotta-light", label: "Light terracotta", dot: "#DD8256" },
-      { value: "terracotta", label: "Terracotta", dot: "#C2410C" },
-      { value: "terracotta-dark", label: "Dark terracotta", dot: "#8F2E08" },
+      { value: "terracotta-light", label: "Light terracotta", dot: "#DDA184" },
+      { value: "terracotta", label: "Terracotta", dot: "#C47B5A" },
+      { value: "terracotta-dark", label: "Dark terracotta", dot: "#9C5A3D" },
     ],
   },
   {
     base: "emerald",
     label: "Emerald",
-    baseDot: "#047857",
+    baseDot: "#477A68",
     shades: [
-      { value: "emerald-light", label: "Light emerald", dot: "#4FAE8E" },
-      { value: "emerald", label: "Emerald", dot: "#047857" },
-      { value: "emerald-dark", label: "Dark emerald", dot: "#024D38" },
+      { value: "emerald-light", label: "Light emerald", dot: "#6FA08C" },
+      { value: "emerald", label: "Emerald", dot: "#477A68" },
+      { value: "emerald-dark", label: "Dark emerald", dot: "#2C5445" },
     ],
   },
   {
     base: "natural",
     label: "Natural",
-    baseDot: "#D6D3D1",
+    baseDot: "#C9C1B8",
     shades: [
-      { value: "natural-light", label: "Light natural", dot: "#EBE9E7" },
-      { value: "natural", label: "Natural", dot: "#D6D3D1" },
-      { value: "natural-dark", label: "Dark natural", dot: "#A8A39F" },
+      { value: "natural-light", label: "Light natural", dot: "#E2DCD2" },
+      { value: "natural", label: "Natural", dot: "#C9C1B8" },
+      { value: "natural-dark", label: "Dark natural", dot: "#A79E92" },
     ],
   },
 ];
@@ -128,19 +110,14 @@ const COLOR_GROUPS = [
 interface WorkspaceProps {
   uploadedImageUrl?: string;
   resultImageUrl?: string;
-
   selectedStyle: string;
   onSelectStyle: (style: string) => void;
-
   roomType: string;
   onSelectRoom: (room: string) => void;
-
   selectedColor: string;
   onSelectColor: (color: string) => void;
-
   onUpload: (file: File) => void;
   onGenerate: () => void;
-
   generating?: boolean;
 }
 
@@ -159,15 +136,9 @@ export default function Workspace({
 }: WorkspaceProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [uploadedImageError, setUploadedImageError] =
-    useState(false);
-
-  const [resultImageError, setResultImageError] =
-    useState(false);
-
-  const [openColorGroup, setOpenColorGroup] = useState<string | null>(
-    null
-  );
+  const [uploadedImageError, setUploadedImageError] = useState(false);
+  const [resultImageError, setResultImageError] = useState(false);
+  const [openColorGroup, setOpenColorGroup] = useState<string | null>(null);
 
   const hasUploadedImage =
     typeof uploadedImageUrl === "string" &&
@@ -181,7 +152,6 @@ export default function Workspace({
 
   function handleDownload() {
     if (!resultImageUrl) return;
-
     const link = document.createElement("a");
     link.href = resultImageUrl;
     link.target = "_blank";
@@ -190,19 +160,17 @@ export default function Workspace({
   }
 
   return (
-    <section className="rounded-3xl border border-[#33475A]/8 bg-white p-6 shadow-sm md:p-8">
+    <section className="rounded-3xl border border-[#3A2119]/8 bg-white p-6 shadow-sm md:p-8">
       {/* HEADER */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7EA6D8]">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#79A3C3]">
             AI workspace
           </p>
-
-          <h2 className="mt-2 font-[family-name:var(--font-fraunces)] text-3xl text-[#33475A]">
+          <h2 className="mt-2 font-[family-name:var(--font-fraunces)] text-3xl text-[#3A2119]">
             Before &amp; after
           </h2>
-
-          <p className="mt-1 text-sm text-[#8598A8]">
+          <p className="mt-1 text-sm text-[#957662]">
             Transform your room with AI and shop the look.
           </p>
         </div>
@@ -210,17 +178,16 @@ export default function Workspace({
         <div className="flex gap-2">
           <button
             type="button"
-            className="flex items-center gap-2 rounded-full border border-[#33475A]/12 px-4 py-2 text-sm font-medium text-[#33475A] transition hover:bg-[#F0F4F8]"
+            className="flex items-center gap-2 rounded-full border border-[#3A2119]/12 px-4 py-2 text-sm font-medium text-[#3A2119] transition hover:bg-[#FAF8F5]"
           >
             <ArrowLeftRight size={15} />
             Compare
           </button>
-
           <button
             type="button"
             disabled={!hasResultImage}
             onClick={handleDownload}
-            className="flex items-center gap-2 rounded-full bg-[#33475A] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#7EA6D8] disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex items-center gap-2 rounded-full bg-[#3A2119] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#513025] disabled:cursor-not-allowed disabled:opacity-40"
           >
             <Download size={15} />
             Export
@@ -230,11 +197,10 @@ export default function Workspace({
 
       {/* BEFORE / AFTER */}
       <div className="mt-7 grid gap-5 lg:grid-cols-2">
-        {/* BEFORE */}
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="overflow-hidden rounded-2xl border-2 border-dashed border-[#33475A]/15 bg-[#F0F4F8] transition hover:border-[#7EA6D8]/50"
+          className="overflow-hidden rounded-2xl border-2 border-dashed border-[#3A2119]/15 bg-[#FAF8F5] transition hover:border-[#79A3C3]/50"
         >
           <div className="relative aspect-square">
             {hasUploadedImage ? (
@@ -246,23 +212,17 @@ export default function Workspace({
               />
             ) : (
               <div className="flex h-full flex-col items-center justify-center px-6">
-                <Upload
-                  size={38}
-                  className="text-[#8598A8]"
-                />
-
-                <h3 className="mt-5 text-base font-semibold text-[#33475A]">
+                <Upload size={38} className="text-[#957662]" />
+                <h3 className="mt-5 text-base font-semibold text-[#3A2119]">
                   Upload your room
                 </h3>
-
-                <p className="mt-1 text-sm text-[#8598A8]">
+                <p className="mt-1 text-sm text-[#957662]">
                   Click or drag a photo here
                 </p>
               </div>
             )}
-
             {hasUploadedImage && (
-              <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-[#33475A] backdrop-blur">
+              <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-[#3A2119] backdrop-blur">
                 Before
               </span>
             )}
@@ -276,20 +236,15 @@ export default function Workspace({
           className="hidden"
           onChange={(event) => {
             const file = event.target.files?.[0];
-
             if (!file) return;
-
             setUploadedImageError(false);
             setResultImageError(false);
-
             onUpload(file);
-
             event.target.value = "";
           }}
         />
 
-        {/* AFTER */}
-        <div className="overflow-hidden rounded-2xl bg-[#33475A]">
+        <div className="overflow-hidden rounded-2xl bg-[#3A2119]">
           <div className="relative aspect-square">
             {hasResultImage ? (
               <>
@@ -298,32 +253,22 @@ export default function Workspace({
                   alt="AI generated room design"
                   className="absolute inset-0 h-full w-full object-cover"
                   onError={() => {
-                    console.error(
-                      "AI result image failed:",
-                      resultImageUrl
-                    );
-
+                    console.error("AI result image failed:", resultImageUrl);
                     setResultImageError(true);
                   }}
                 />
-
-                <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-[#33475A] backdrop-blur">
+                <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-[#3A2119] backdrop-blur">
                   AI generated
                 </span>
               </>
             ) : (
               <div className="flex h-full flex-col items-center justify-center px-8 text-center">
-                <WandSparkles
-                  size={38}
-                  className="text-white/40"
-                />
-
+                <WandSparkles size={38} className="text-white/40" />
                 <p className="mt-4 text-sm text-white/60">
                   {generating
                     ? "Generating your design..."
                     : "Your AI design will appear here"}
                 </p>
-
                 {generating && (
                   <div className="mt-5 h-1.5 w-32 overflow-hidden rounded-full bg-white/10">
                     <div className="h-full w-1/2 animate-pulse rounded-full bg-white/60" />
@@ -338,20 +283,15 @@ export default function Workspace({
       {/* ROOM TYPE */}
       <div className="mt-7">
         <div className="mb-3">
-          <h3 className="text-sm font-semibold text-[#33475A]">
-            Room type
-          </h3>
-
-          <p className="mt-1 text-xs text-[#8598A8]">
-            Choose the room so AI and furniture matching use
-            the correct products.
+          <h3 className="text-sm font-semibold text-[#3A2119]">Room type</h3>
+          <p className="mt-1 text-xs text-[#957662]">
+            Choose the room so AI and furniture matching use the correct
+            products.
           </p>
         </div>
-
         <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
           {ROOMS.map((room) => {
             const active = roomType === room.value;
-
             return (
               <button
                 type="button"
@@ -359,15 +299,14 @@ export default function Workspace({
                 onClick={() => onSelectRoom(room.value)}
                 className={`rounded-xl border px-3 py-3 text-left transition ${
                   active
-                    ? "border-[#7EA6D8] bg-[#7EA6D8]/10"
-                    : "border-[#33475A]/10 hover:border-[#33475A]/25"
+                    ? "border-[#79A3C3] bg-[#79A3C3]/10"
+                    : "border-[#3A2119]/10 hover:border-[#3A2119]/25"
                 }`}
               >
-                <p className="text-sm font-semibold text-[#33475A]">
+                <p className="text-sm font-semibold text-[#3A2119]">
                   {room.label}
                 </p>
-
-                <p className="mt-0.5 text-[11px] text-[#8598A8]">
+                <p className="mt-0.5 text-[11px] text-[#957662]">
                   AI matched room
                 </p>
               </button>
@@ -378,14 +317,10 @@ export default function Workspace({
 
       {/* STYLE */}
       <div className="mt-7">
-        <h3 className="text-sm font-semibold text-[#33475A]">
-          Design style
-        </h3>
-
+        <h3 className="text-sm font-semibold text-[#3A2119]">Design style</h3>
         <div className="mt-3 grid gap-2 md:grid-cols-4">
           {STYLES.map((style) => {
             const active = selectedStyle === style;
-
             return (
               <button
                 type="button"
@@ -393,15 +328,14 @@ export default function Workspace({
                 onClick={() => onSelectStyle(style)}
                 className={`rounded-xl border p-3 text-left transition ${
                   active
-                    ? "border-[#7EA6D8] bg-[#7EA6D8]/10"
-                    : "border-[#33475A]/10 hover:border-[#33475A]/25"
+                    ? "border-[#79A3C3] bg-[#79A3C3]/10"
+                    : "border-[#3A2119]/10 hover:border-[#3A2119]/25"
                 }`}
               >
-                <p className="text-sm font-semibold text-[#33475A]">
+                <p className="text-sm font-semibold text-[#3A2119]">
                   {style}
                 </p>
-
-                <p className="mt-1 text-[11px] text-[#8598A8]">
+                <p className="mt-1 text-[11px] text-[#957662]">
                   AI-matched style
                 </p>
               </button>
@@ -412,68 +346,87 @@ export default function Workspace({
 
       {/* COLOR */}
       <div className="mt-7">
-        <h3 className="text-sm font-semibold text-[#33475A]">
+        <h3 className="text-sm font-semibold text-[#3A2119]">
           Color palette
         </h3>
 
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-4 grid grid-cols-3 gap-x-2 gap-y-6 sm:grid-cols-4">
           {COLOR_GROUPS.map((group) => {
             const isGroupActive = group.shades.some(
               (s) => s.value === selectedColor
             );
             const isOpen = openColorGroup === group.base;
-
             return (
               <button
                 type="button"
                 key={group.base}
-                onClick={() =>
-                  setOpenColorGroup(isOpen ? null : group.base)
-                }
-                className={`flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium capitalize transition ${
-                  isGroupActive || isOpen
-                    ? "border-[#33475A] bg-[#33475A] text-white"
-                    : "border-[#33475A]/10 bg-white text-[#33475A] hover:border-[#33475A]/25"
-                }`}
+                onClick={() => setOpenColorGroup(isOpen ? null : group.base)}
+                className="group flex flex-col items-center gap-2"
               >
+                <div className="flex">
+                  {group.shades.map((shade, i) => (
+                    <span
+                      key={shade.value}
+                      className={`h-11 w-11 rounded-full border-2 border-white shadow-md ring-1 ring-black/10 transition-transform ${
+                        i > 0 ? "-ml-4" : ""
+                      } ${
+                        isOpen || isGroupActive
+                          ? "scale-105"
+                          : "group-hover:scale-105"
+                      }`}
+                      style={{
+                        backgroundColor: shade.dot,
+                        zIndex: 10 - i,
+                      }}
+                    />
+                  ))}
+                </div>
                 <span
-                  className="h-3 w-3 rounded-full border border-black/10"
-                  style={{ backgroundColor: group.baseDot }}
-                />
-
-                {group.label}
+                  className={`text-xs font-medium transition ${
+                    isOpen || isGroupActive
+                      ? "font-semibold text-[#3A2119]"
+                      : "text-[#957662]"
+                  }`}
+                >
+                  {group.label}
+                </span>
               </button>
             );
           })}
         </div>
 
         {openColorGroup && (
-          <div className="mt-3 flex flex-wrap gap-2 rounded-xl border border-[#33475A]/10 bg-[#F0F4F8] p-3">
-            {COLOR_GROUPS.find(
-              (g) => g.base === openColorGroup
-            )?.shades.map((shade) => {
-              const active = selectedColor === shade.value;
-
-              return (
-                <button
-                  type="button"
-                  key={shade.value}
-                  onClick={() => onSelectColor(shade.value)}
-                  className={`flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium transition ${
-                    active
-                      ? "border-[#33475A] bg-[#33475A] text-white"
-                      : "border-[#33475A]/10 bg-white text-[#33475A] hover:border-[#33475A]/25"
-                  }`}
-                >
-                  <span
-                    className="h-3 w-3 rounded-full border border-black/10"
-                    style={{ backgroundColor: shade.dot }}
-                  />
-
-                  {shade.label}
-                </button>
-              );
-            })}
+          <div className="mt-5 rounded-2xl border border-[#3A2119]/8 bg-[#FAF8F5] p-4">
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-wide text-[#957662]">
+              Choose a shade
+            </p>
+            <div className="grid grid-cols-3 gap-2.5">
+              {COLOR_GROUPS.find(
+                (g) => g.base === openColorGroup
+              )?.shades.map((shade) => {
+                const active = selectedColor === shade.value;
+                return (
+                  <button
+                    type="button"
+                    key={shade.value}
+                    onClick={() => onSelectColor(shade.value)}
+                    className={`flex flex-col items-center gap-2 rounded-xl border px-2 py-3 transition-all ${
+                      active
+                        ? "border-[#3A2119] bg-white shadow-md ring-2 ring-[#3A2119]/15"
+                        : "border-[#3A2119]/10 bg-white hover:border-[#3A2119]/30"
+                    }`}
+                  >
+                    <span
+                      className="h-8 w-8 rounded-full border-2 border-white shadow-sm ring-1 ring-black/10"
+                      style={{ backgroundColor: shade.dot }}
+                    />
+                    <span className="text-center text-[11px] font-medium leading-tight text-[#3A2119]">
+                      {shade.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
@@ -483,13 +436,10 @@ export default function Workspace({
         type="button"
         onClick={onGenerate}
         disabled={!hasUploadedImage || generating}
-        className="mt-8 flex w-full items-center justify-center gap-2 rounded-full bg-[#33475A] py-4 text-sm font-semibold text-white transition hover:bg-[#7EA6D8] disabled:cursor-not-allowed disabled:opacity-40"
+        className="mt-8 flex w-full items-center justify-center gap-2 rounded-full bg-[#3A2119] py-4 text-sm font-semibold text-white transition hover:bg-[#513025] disabled:cursor-not-allowed disabled:opacity-40"
       >
         <WandSparkles size={18} />
-
-        {generating
-          ? "Generating design..."
-          : "Generate design"}
+        {generating ? "Generating design..." : "Generate design"}
       </button>
     </section>
   );
