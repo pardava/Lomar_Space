@@ -7,10 +7,11 @@ import InteriorStyles from "@/components/landing/InteriorStyles";
 import BeforeAfter from "@/components/landing/BeforeAfter/BeforeAfter";
 import CTA from "@/components/landing/CTA";
 import Footer from "@/components/landing/Footer";
+import { inter, serif } from "@/lib/fonts";
 
 export default function Home() {
   return (
-    <>
+    <main className={`editorial ${inter.variable} ${serif.variable}`}>
       <Navbar />
       <Hero />
       <TrustedBrands />
@@ -20,6 +21,6 @@ export default function Home() {
       <BeforeAfter />
       <CTA />
       <Footer />
-    </>
+    </main>
   );
 }

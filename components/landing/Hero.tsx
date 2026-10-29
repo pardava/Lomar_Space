@@ -1,97 +1,69 @@
-"use client";
-
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { Armchair, Lamp, Palette } from "lucide-react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden bg-[#D2E2EC]">
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -left-32 top-0 h-[500px] w-[500px] rounded-full bg-[#3A2119]/10 blur-3xl" />
-        <div className="absolute -right-32 top-40 h-[400px] w-[400px] rounded-full bg-[#F2E6D6]/10 blur-3xl" />
-      </div>
+    <section className="relative min-h-[720px] w-full overflow-hidden bg-[#F7F3EC] md:min-h-[780px]">
+      {/* Background image */}
+      <img
+        src="/images/hero.png"
+        alt="Warm contemporary living space designed with LOMAR"
+        className="absolute inset-0 h-full w-full object-cover object-center"
+      />
 
-      <div className="mx-auto grid min-h-[90vh] max-w-7xl grid-cols-1 items-center gap-16 px-6 py-24 lg:grid-cols-[1.1fr_0.9fr]">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#3A2119]/20 bg-white px-4 py-1.5 text-sm font-medium text-[#3A2119]">
-            <Palette className="h-4 w-4" />
-            AI interior design, made local
-          </span>
+      {/* Warm overlay */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(90deg, rgba(35,32,25,0.68) 0%, rgba(35,32,25,0.38) 42%, rgba(35,32,25,0.04) 100%)",
+        }}
+      />
 
-          <h1 className="mt-8 font-[family-name:var(--font-fraunces)] text-5xl font-medium leading-[1.05] tracking-tight text-[#3A2119] md:text-6xl">
-            See your room
+      {/* Content */}
+      <div className="relative mx-auto flex min-h-[720px] max-w-[1440px] items-end px-6 pb-20 pt-32 sm:px-10 md:min-h-[780px] md:px-16 md:pb-28">
+        <div className="max-w-3xl">
+          <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-2 text-sm text-white backdrop-blur-sm">
+            <Sparkles size={15} />
+            <span>AI-powered interior design</span>
+          </div>
+
+          <h1 className="max-w-3xl text-5xl font-normal leading-[1.08] tracking-[-0.04em] text-white sm:text-6xl md:text-8xl">
+            Make room for
             <br />
-            <span className="text-[#3A2119]">reimagined</span> — with
-            furniture you can actually buy.
+            <span className="font-serif italic text-[#E8DCCB]">
+              better living.
+            </span>
           </h1>
 
-          <p className="mt-6 max-w-lg text-lg leading-relaxed text-[#957662]">
-            Upload a photo of your space. Lomar redesigns it with AI, matched
-            to your style and budget — from Munich to Samarkand.
+          <p className="mt-7 max-w-lg text-base leading-7 text-white/85 sm:text-lg sm:leading-8">
+            Discover your style, reimagine your space with AI, and find
+            furniture that makes your house feel like home.
           </p>
 
-          <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link
               href="/ai"
-              className="rounded-full bg-[#3A2119] px-8 py-4 text-base font-semibold text-white transition hover:bg-[#3A2119]"
+              className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#656B4E] px-7 py-4 text-sm font-medium text-white transition-colors duration-300 hover:bg-[#51573D]"
             >
-              Design your room →
+              Design your space
+              <ArrowUpRight size={17} />
             </Link>
+
             <Link
               href="/catalog"
-              className="rounded-full border border-[#3A2119]/15 bg-transparent px-8 py-4 text-base font-semibold text-[#3A2119] transition hover:bg-white"
+              className="inline-flex min-h-14 items-center justify-center gap-3 rounded-full border border-white/60 bg-white/5 px-7 py-4 text-sm font-medium text-white backdrop-blur-sm transition-colors duration-300 hover:bg-white hover:text-[#29291F]"
             >
-              See how it works
+              Explore furniture
+              <ArrowUpRight size={17} />
             </Link>
           </div>
-        </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 24, rotate: -1 }}
-          animate={{ opacity: 1, y: 0, rotate: -2 }}
-          transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
-          className="relative mx-auto w-full max-w-sm rounded-3xl border border-[#3A2119]/10 bg-white p-6 shadow-xl"
-        >
-          <p className="text-xs font-medium uppercase tracking-wide text-[#957662]">
-            Your budget
-          </p>
-          <p className="mt-1 font-[family-name:var(--font-fraunces)] text-3xl text-[#3A2119]">
-            €2,400
-          </p>
-          <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[#D6E4F3]">
-            <div className="h-full w-[78%] rounded-full bg-[#3A2119]" />
+          <div className="mt-12 flex items-center gap-3 text-sm text-white/75">
+            <span className="h-px w-10 bg-[#E8DCCB]" />
+            <span>Thoughtful spaces. Timeless living.</span>
           </div>
-
-          <div className="mt-6 space-y-3">
-            {[
-              { icon: Armchair, name: "Sectional sofa", price: "€1,290" },
-              { icon: Lamp, name: "Floor lamp", price: "€89" },
-              { icon: Palette, name: "Wall art set", price: "€79" },
-            ].map((item) => (
-              <div
-                key={item.name}
-                className="flex items-center gap-3 rounded-xl bg-[#D2E2EC] p-3"
-              >
-                <item.icon className="h-5 w-5 text-[#3A2119]" />
-                <span className="flex-1 text-sm text-[#3A2119]">
-                  {item.name}
-                </span>
-                <span className="text-sm font-medium text-[#3A2119]">
-                  {item.price}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <p className="mt-4 text-center text-xs text-[#957662]">
-            Example — your picks will vary
-          </p>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -3,13 +3,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X, ShoppingCart, Sparkles } from "lucide-react";
+import { Menu, X, ShoppingCart, Sparkles, ArrowUpRight } from "lucide-react";
 import { useState } from "react";
 import { useCartStore } from "@/store/cartStore";
 
 const links = [
   { name: "Home", href: "/" },
-  { name: "Marketplace", href: "/catalog" },
+  { name: "Explore", href: "/catalog" },
   { name: "AI Studio", href: "/ai" },
 ];
 
@@ -19,65 +19,69 @@ export default function Navbar() {
   const cartCount = useCartStore((s) => s.items.length);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#3A2119]/8 bg-[#D2E2EC]/90 backdrop-blur-md">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-        <Link href="/" className="flex items-center gap-2.5">
-          {/* Export the logo mark from your brand kit as an SVG and
-              place it at public/logo.svg — falls back gracefully to
-              just the wordmark if the file isn't there yet. */}
+    <header className="sticky top-0 z-50 border-b border-[#29291F]/10 bg-[#F7F3EC]/95 backdrop-blur-xl">
+      <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between px-5 sm:px-8 lg:px-12">
+        {/* Brand */}
+        <Link
+          href="/"
+          className="flex shrink-0 items-center gap-3"
+          onClick={() => setOpen(false)}
+        >
           <Image
             src="/logo.png"
-            alt=""
-            width={32}
-            height={32}
-            className="h-8 w-8"
+            alt="LOMAR Space"
+            width={38}
+            height={38}
+            className="h-[38px] w-[38px] object-contain"
           />
+
           <div className="leading-none">
-            <span className="font-[family-name:var(--font-fraunces)] text-2xl tracking-tight text-[#3A2119]">
-              Lomar <span className="text-[#3A2119]">Space</span>
+            <span className="font-[family-name:var(--font-fraunces)] text-[25px] tracking-[-0.06em] text-[#29291F]">
+              LOMAR
+              <span className="ml-1.5 font-normal text-[#656B4E]">Space</span>
             </span>
-            <p className="mt-0.5 text-[10px] font-medium uppercase tracking-[0.15em] text-[#957662]">
-              Turn inspiration into reality
+            <p className="mt-1.5 text-[9px] font-medium uppercase tracking-[0.19em] text-[#827B6D]">
+              Thoughtful spaces
             </p>
           </div>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-9">
+        {/* Desktop navigation */}
+        <nav className="hidden items-center gap-8 md:flex lg:gap-10">
           {links.map((link) => {
             const active = pathname === link.href;
+
             return (
               <Link
                 key={link.name}
                 href={link.href}
-                className={`text-sm font-medium transition ${
+                className={`relative py-2 text-[13px] transition-colors duration-200 ${
                   active
-                    ? "text-[#3A2119]"
-                    : "text-[#957662] hover:text-[#3A2119]"
+                    ? "font-semibold text-[#29291F]"
+                    : "font-medium text-[#777366] hover:text-[#29291F]"
                 }`}
               >
                 {link.name}
+
+                {active && (
+                  <span className="absolute -bottom-[2px] left-0 h-[2px] w-full rounded-full bg-[#656B4E]" />
+                )}
               </Link>
             );
           })}
         </nav>
 
-        <div className="hidden md:flex items-center gap-4">
-          <Link
-            href="/ai"
-            className="flex items-center gap-1.5 rounded-full border border-[#3A2119]/25 px-4 py-2 text-sm font-medium text-[#3A2119] transition hover:bg-[#3A2119]/5"
-          >
-            <Sparkles className="h-4 w-4" />
-            AI Designer
-          </Link>
-
+        {/* Desktop actions */}
+        <div className="hidden items-center gap-3 md:flex">
           <Link
             href="/checkout"
-            className="relative rounded-full p-2.5 text-[#3A2119] transition hover:bg-white"
-            aria-label="View shopping list"
+            className="relative rounded-full p-2.5 text-[#29291F] transition hover:bg-[#E8DCCB]/60"
+            aria-label={`Shopping list${cartCount ? `, ${cartCount} items` : ""}`}
           >
-            <ShoppingCart className="h-5 w-5" />
+            <ShoppingCart size={19} strokeWidth={1.6} />
+
             {cartCount > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#3A2119] text-[10px] font-bold text-white">
+              <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#656B4E] px-1 text-[10px] font-semibold text-white">
                 {cartCount}
               </span>
             )}
@@ -85,49 +89,88 @@ export default function Navbar() {
 
           <Link
             href="/register"
-            className="rounded-full bg-[#3A2119] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#3A2119]"
+            className="rounded-full px-4 py-2.5 text-[13px] font-medium text-[#29291F] transition hover:bg-[#E8DCCB]/60"
           >
             Sign in
           </Link>
+
+          <Link
+            href="/ai"
+            className="inline-flex items-center gap-2 rounded-full bg-[#656B4E] px-5 py-3 text-[13px] font-medium text-white transition duration-300 hover:bg-[#51573D]"
+          >
+            <Sparkles size={15} />
+            Design with AI
+            <ArrowUpRight size={14} />
+          </Link>
         </div>
 
-        <div className="flex items-center gap-2 md:hidden">
-          <Link href="/checkout" className="relative p-2 text-[#3A2119]">
-            <ShoppingCart className="h-5 w-5" />
+        {/* Mobile actions */}
+        <div className="flex items-center gap-1 md:hidden">
+          <Link
+            href="/checkout"
+            className="relative rounded-full p-2.5 text-[#29291F]"
+            aria-label="View shopping list"
+          >
+            <ShoppingCart size={20} />
+
             {cartCount > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#3A2119] text-[9px] font-bold text-white">
+              <span className="absolute right-0 top-0 flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-[#656B4E] px-1 text-[9px] font-semibold text-white">
                 {cartCount}
               </span>
             )}
           </Link>
+
           <button
-            className="text-[#3A2119]"
+            type="button"
+            className="rounded-full p-2.5 text-[#29291F] transition hover:bg-[#E8DCCB]/70"
             onClick={() => setOpen(!open)}
-            aria-label="Toggle menu"
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
           >
-            {open ? <X /> : <Menu />}
+            {open ? <X size={21} /> : <Menu size={21} />}
           </button>
         </div>
       </div>
 
+      {/* Mobile navigation */}
       {open && (
-        <div className="border-t border-[#3A2119]/8 bg-[#D2E2EC] md:hidden">
-          <nav className="flex flex-col p-6">
-            {links.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="py-3 text-[#3A2119]"
-                onClick={() => setOpen(false)}
-              >
-                {link.name}
-              </Link>
-            ))}
+        <div className="border-t border-[#29291F]/10 bg-[#F7F3EC] md:hidden">
+          <nav className="mx-auto flex max-w-[1440px] flex-col px-6 py-5 sm:px-8">
+            {links.map((link) => {
+              const active = pathname === link.href;
+
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setOpen(false)}
+                  className={`border-b border-[#29291F]/[0.06] py-4 text-[15px] ${
+                    active
+                      ? "font-semibold text-[#656B4E]"
+                      : "font-medium text-[#29291F]"
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
+
             <Link
               href="/register"
-              className="mt-3 rounded-full bg-[#3A2119] px-5 py-3 text-center font-semibold text-white"
+              onClick={() => setOpen(false)}
+              className="mt-5 rounded-full border border-[#29291F]/15 px-5 py-3.5 text-center text-sm font-medium text-[#29291F]"
             >
               Sign in
+            </Link>
+
+            <Link
+              href="/ai"
+              onClick={() => setOpen(false)}
+              className="mt-3 flex items-center justify-center gap-2 rounded-full bg-[#656B4E] px-5 py-3.5 text-sm font-medium text-white"
+            >
+              <Sparkles size={16} />
+              Design with AI
+              <ArrowUpRight size={15} />
             </Link>
           </nav>
         </div>

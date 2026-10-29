@@ -3,88 +3,89 @@
 import { useState } from "react";
 
 interface BudgetPanelProps {
-  estimatedItemCount?: number;
-  onGenerate: (data: { budget: number }) => void;
+estimatedItemCount?: number;
+onGenerate: (data: { budget: number }) => void;
 }
 
 export default function BudgetPanel({
-  estimatedItemCount,
-  onGenerate,
+estimatedItemCount,
+onGenerate,
 }: BudgetPanelProps) {
-  const [budget, setBudget] = useState(3500);
+const [budget, setBudget] = useState(3500);
 
-  function handleBudgetChange(value: number) {
-    setBudget(value);
-    onGenerate({ budget: value });
-  }
+function handleBudgetChange(value: number) {
+setBudget(value);
+onGenerate({ budget: value });
+}
 
-  const formattedBudget = String(budget).replace(
-    /\B(?=(\d{3})+(?!\d))/g,
-    ","
-  );
+const formattedBudget = String(budget).replace(
+/\B(?=(\d{3})+(?!\d))/g,
+","
+);
 
-  return (
-    <aside className="rounded-3xl border border-[#3A2119]/8 bg-white p-6">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#3A2119]">
-          Your budget
-        </p>
+return (
+<aside className="rounded-3xl border border-[#3A2119]/10 bg-[#F7F3EC] p-6">
+<div>
+<p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#656B4E]">
+Your budget
+</p>
 
-        <h2 className="mt-2 font-[family-name:var(--font-fraunces)] text-2xl text-[#3A2119]">
-          Design within your budget
-        </h2>
+    <h2 className="mt-2 font-[family-name:var(--font-fraunces)] text-2xl text-[#3A2119]">
+      Design within your budget
+    </h2>
 
-        <p className="mt-2 text-sm leading-6 text-[#957662]">
-          Choose how much you would like to spend on furniture for your room.
-        </p>
-      </div>
+    <p className="mt-2 text-sm leading-6 text-[#656B4E]">
+      Choose how much you would like to spend on furniture for your room.
+    </p>
+  </div>
 
-      <div className="mt-8">
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-[#957662]">Budget</span>
+  <div className="mt-8">
+    <div className="flex items-center justify-between">
+      <span className="text-sm text-[#656B4E]">Budget</span>
 
-          <span className="font-[family-name:var(--font-fraunces)] text-2xl text-[#3A2119]">
-            €{formattedBudget}
-          </span>
-        </div>
+      <span className="font-[family-name:var(--font-fraunces)] text-2xl text-[#3A2119]">
+        €{formattedBudget}
+      </span>
+    </div>
 
-        <input
-          type="range"
-          min={500}
-          max={10000}
-          step={100}
-          value={budget}
-          onChange={(event) =>
-            handleBudgetChange(Number(event.target.value))
-          }
-          className="mt-5 w-full accent-[#3A2119]"
-        />
+    <input
+      type="range"
+      min={500}
+      max={10000}
+      step={100}
+      value={budget}
+      onChange={(event) =>
+        handleBudgetChange(Number(event.target.value))
+      }
+      className="mt-5 w-full accent-[#656B4E]"
+    />
 
-        <div className="mt-2 flex justify-between text-xs text-[#957662]">
-          <span>€500</span>
-          <span>€10,000</span>
-        </div>
-      </div>
+    <div className="mt-2 flex justify-between text-xs text-[#656B4E]">
+      <span>€500</span>
+      <span>€10,000</span>
+    </div>
+  </div>
 
-      {estimatedItemCount !== undefined && estimatedItemCount > 0 && (
-        <div className="mt-6 rounded-2xl bg-[#D2E2EC] p-4">
-          <p className="text-sm font-medium text-[#3A2119]">
-            {estimatedItemCount} furniture pieces found
-          </p>
+  {estimatedItemCount !== undefined && estimatedItemCount > 0 && (
+    <div className="mt-6 rounded-2xl bg-[#E8E2D6] p-4">
+      <p className="text-sm font-medium text-[#3A2119]">
+        {estimatedItemCount} furniture pieces found
+      </p>
 
-          <p className="mt-1 text-xs text-[#957662]">
-            Matching your selected style and budget.
-          </p>
-        </div>
-      )}
+      <p className="mt-1 text-xs text-[#656B4E]">
+        Matching your selected style and budget.
+      </p>
+    </div>
+  )}
 
-      <button
-        type="button"
-        onClick={() => onGenerate({ budget })}
-        className="mt-6 w-full rounded-full bg-[#3A2119] py-3.5 text-sm font-semibold text-white transition hover:bg-[#3A2119]"
-      >
-        Update furniture
-      </button>
-    </aside>
-  );
+  <button
+    type="button"
+    onClick={() => onGenerate({ budget })}
+    className="mt-6 w-full rounded-full bg-[#656B4E] py-3.5 text-sm font-semibold text-white transition hover:bg-[#535840]"
+  >
+    Update furniture
+  </button>
+</aside>
+
+);
 }

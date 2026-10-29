@@ -15,6 +15,7 @@ interface FurnitureRow {
   color: string | null;
   brands: { name: string } | null;
   categories: { name: string } | null;
+  category_id?: string | null;
   style?: string[] | null;
   room_type?: string[] | null;
 }
@@ -28,14 +29,46 @@ function toFurniture(row: FurnitureRow): Furniture {
     currency: row.currency,
     image_url: row.image_url,
     product_url: row.product_url ?? undefined,
-
     width_cm: row.width_cm ?? undefined,
     depth_cm: row.depth_cm ?? undefined,
     height_cm: row.height_cm ?? undefined,
-
     brand_name: row.brands?.name,
     category_name: row.categories?.name,
   };
+}
+
+// ============================================================
+// Asosiy MEBEL kategoriyalari — "Shop the look" panelida
+// ustuvor ko'rsatiladi (catalog.ts'dagi bilan bir xil mantiq).
+// ============================================================
+const CORE_FURNITURE_CATEGORIES = [
+  "bed", "sofa", "wardrobe", "chair", "table", "desk", "shelf", "lamp", "rug", "mirror",
+];
+
+// ============================================================
+// Mebel/dekorga ALOQASI YO'Q mahsulotlar — kengaytirilgan ro'yxat
+// (yangi topilgan: neon yozuvlar, siqib chiqariladigan idish va h.k.)
+// ============================================================
+const EXCLUDE_KEYWORDS = [
+  // Oziq-ovqat / oshxona sarf materiallari
+  "mehl", "stärke", "tapioka", "besteck", "zahnstocher",
+  "vorratsbehälter", "kaffeebecher", "kunststoffteller",
+  "glaswaren", "cocktailgläser", "trinkglas", "geschirrtuch",
+  "quetschflasche", "flasche",
+  // Gigiyena / tozalash
+  "shampoo-abfüllspender", "seifenspender", "gesichtstücher",
+  "taschentücher", "toilettenpapierhalter", "duschschlauch",
+  "geschirrspülbürste", "bürstenmann", "wc-sitz", "putzlappen",
+  // Elektronika / maishiy texnika
+  "mülleimer", "abfalleimer", "müllbehälter",
+  // Dekorativ, lekin mebel-dizayn kontekstiga mos kelmaydigan narsalar
+  "led neon", "neon schild", "neon licht",
+];
+
+function isExcluded(name: string | null | undefined): boolean {
+  if (!name) return false;
+  const lower = name.toLowerCase();
+  return EXCLUDE_KEYWORDS.some((kw) => lower.includes(kw));
 }
 
 interface MatchParams {
@@ -46,6 +79,19 @@ interface MatchParams {
   limit?: number;
 }
 
+/**
+ * Kategoriyalar jadvalidan asosiy mebel toifalarining ID'larini olish.
+ * catalog.ts'dagi bilan bir xil mantiq — bu yerda takrorlangan,
+ * chunki bu boshqa fayl/modul (kelajakda umumiy helper'ga chiqarish
+ * mumkin).
+ */
+async function getCoreCategoryIds(): Promise<string[]> {
+  const { data: categories } = await supabase.from("categories").select("id, name");
+  return (categories ?? [])
+    .filter((c) => CORE_FURNITURE_CATEGORIES.includes((c.name ?? "").toLowerCase()))
+    .map((c) => c.id);
+}
+
 export async function getMatchedFurniture({
   style,
   roomType,
@@ -53,10 +99,7 @@ export async function getMatchedFurniture({
   maxBudget,
   limit = 12,
 }: MatchParams): Promise<Furniture[]> {
-  let query = supabase
-    .from("furniture")
-    .select(
-      `
+  const SELECT_FIELDS = `
       id,
       name,
       description,
@@ -70,56 +113,68 @@ export async function getMatchedFurniture({
       color,
       brands(name),
       categories(name),
+      category_id,
       style,
       room_type
-      `
-    );
+  `;
 
-  if (style) {
-    query = query.contains("style", [style]);
+  function baseQuery() {
+    let q = supabase.from("furniture").select(SELECT_FIELDS).eq("is_active", true);
+    if (style) q = q.contains("style", [style]);
+    if (roomType) q = q.contains("room_type", [roomType]);
+    if (typeof maxBudget === "number") q = q.lte("price", maxBudget);
+    return q;
   }
 
-  if (roomType) {
-    query = query.contains("room_type", [roomType]);
+  const coreCategoryIds = await getCoreCategoryIds();
+
+  // --- 1-bosqich: asosiy mebelni ustuvor olish ---
+  let primaryRows: any[] = [];
+  if (coreCategoryIds.length > 0) {
+    const { data, error } = await baseQuery().in("category_id", coreCategoryIds).limit(100);
+    if (error) {
+      console.error("getMatchedFurniture primary error:", error);
+    } else {
+      primaryRows = (data ?? []).filter((row) => !isExcluded(row.name));
+    }
   }
 
-  if (typeof maxBudget === "number") {
-    query = query.lte("price", maxBudget);
+  // --- 2-bosqich: yetarli bo'lmasa, dekor/boshqa toifalar bilan to'ldirish ---
+  let combinedRows: any[] = [...primaryRows];
+
+  if (combinedRows.length < limit * 3) {
+    // Ehtiyot uchun ko'proq (limit'dan 3x ko'p) yig'amiz, chunki keyin
+    // rang filtri va narx saralash qo'llaniladi — yetarli tanlov bo'lishi kerak.
+    const existingIds = new Set(combinedRows.map((r) => r.id));
+    const { data: fillerData, error: fillerError } = await baseQuery().limit(150);
+
+    if (!fillerError && fillerData) {
+      const fillerFiltered = fillerData
+        .filter((row) => !existingIds.has(row.id))
+        .filter((row) => !isExcluded(row.name));
+      combinedRows = combinedRows.concat(fillerFiltered);
+    }
   }
 
-  query = query
-    .order("price", { ascending: true })
-    .limit(50);
+  const rows = combinedRows as unknown as FurnitureRow[];
 
-  const { data, error } = await query;
-
-  if (error) {
-    console.error("getMatchedFurniture error:", error);
-    return [];
-  }
-
-  const rows = (data ?? []) as unknown as FurnitureRow[];
-
+  // --- 3-bosqich: rang bo'yicha filtrlash ---
   let filteredRows = rows;
-
   if (color) {
     const normalizedColor = color.toLowerCase();
-
-    const exactColorRows = rows.filter((row) => {
+    const exactColorRows = filteredRows.filter((row) => {
       const rowColor = row.color?.toLowerCase() ?? "";
-
-      return (
-        rowColor.includes(normalizedColor) ||
-        normalizedColor.includes(rowColor)
-      );
+      return rowColor.includes(normalizedColor) || normalizedColor.includes(rowColor);
     });
-
     if (exactColorRows.length > 0) {
       filteredRows = exactColorRows;
     }
   }
 
-  filteredRows = filteredRows.slice(0, limit);
+  // --- 4-bosqich: narx bo'yicha saralash, limit qo'llash ---
+  filteredRows = filteredRows
+    .sort((a, b) => Number(a.price) - Number(b.price))
+    .slice(0, limit);
 
   return filteredRows.map(toFurniture);
 }
@@ -140,8 +195,10 @@ export interface CatalogFilters {
 export async function getFilteredFurniture(
   filters: CatalogFilters = {}
 ): Promise<Furniture[]> {
-  let query = supabase.from("furniture").select(
-    `
+  let query = supabase
+    .from("furniture")
+    .select(
+      `
       id,
       name,
       description,
@@ -158,23 +215,31 @@ export async function getFilteredFurniture(
       style,
       room_type
       `
-  );
+    )
+    .eq("is_active", true);
 
-  if (filters.style) {
-    query = query.contains("style", [filters.style]);
+  if (filters.category) {
+    const { data: categoryRow, error: categoryError } = await supabase
+      .from("categories")
+      .select("id")
+      .ilike("name", filters.category)
+      .maybeSingle();
+
+    if (categoryError) {
+      console.error("getFilteredFurniture category lookup error:", categoryError);
+    }
+
+    if (categoryRow?.id) {
+      query = query.eq("category_id", categoryRow.id);
+    } else {
+      return [];
+    }
   }
 
-  if (filters.roomType) {
-    query = query.contains("room_type", [filters.roomType]);
-  }
-
-  if (filters.minPrice !== undefined) {
-    query = query.gte("price", filters.minPrice);
-  }
-
-  if (filters.maxPrice !== undefined) {
-    query = query.lte("price", filters.maxPrice);
-  }
+  if (filters.style) query = query.contains("style", [filters.style]);
+  if (filters.roomType) query = query.contains("room_type", [filters.roomType]);
+  if (filters.minPrice !== undefined) query = query.gte("price", filters.minPrice);
+  if (filters.maxPrice !== undefined) query = query.lte("price", filters.maxPrice);
 
   if (filters.sort === "price_asc") {
     query = query.order("price", { ascending: true });
@@ -191,7 +256,8 @@ export async function getFilteredFurniture(
     return [];
   }
 
-  return (data as unknown as FurnitureRow[]).map(toFurniture);
+  const rows = (data as unknown as FurnitureRow[]).filter((row) => !isExcluded(row.name));
+  return rows.map(toFurniture);
 }
 
 /**
@@ -203,19 +269,12 @@ export async function getFilterOptions(): Promise<{
   rooms: string[];
   colors: string[];
 }> {
-  const [
-    { data: categoryRows },
-    { data: furnitureRows },
-  ] = await Promise.all([
+  const [{ data: categoryRows }, { data: furnitureRows }] = await Promise.all([
     supabase.from("categories").select("name"),
-    supabase
-      .from("furniture")
-      .select("style, room_type, color"),
+    supabase.from("furniture").select("style, room_type, color").eq("is_active", true),
   ]);
 
-  const categories = (categoryRows ?? [])
-    .map((row) => row.name as string)
-    .filter(Boolean);
+  const categories = (categoryRows ?? []).map((row) => row.name as string).filter(Boolean);
 
   const styleSet = new Set<string>();
   const roomSet = new Set<string>();
@@ -226,21 +285,9 @@ export async function getFilterOptions(): Promise<{
     const rooms = row.room_type as string[] | null;
     const color = row.color as string | null;
 
-    styles?.forEach((style) => {
-      if (style) {
-        styleSet.add(style);
-      }
-    });
-
-    rooms?.forEach((room) => {
-      if (room) {
-        roomSet.add(room);
-      }
-    });
-
-    if (color) {
-      colorSet.add(color);
-    }
+    styles?.forEach((s) => s && styleSet.add(s));
+    rooms?.forEach((r) => r && roomSet.add(r));
+    if (color) colorSet.add(color);
   });
 
   return {
@@ -253,10 +300,6 @@ export async function getFilterOptions(): Promise<{
 
 /**
  * Admin: create furniture
- *
- * Goes through /api/admin/furniture (not a direct Supabase write) because
- * the anon client only has read access — writes need the service role
- * key, which only exists server-side. See app/api/admin/furniture/route.ts.
  */
 interface CreateFurnitureInput {
   name: string;

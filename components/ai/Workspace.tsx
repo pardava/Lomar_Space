@@ -160,7 +160,7 @@ export default function Workspace({
   }
 
   return (
-    <section className="rounded-3xl border border-[#3A2119]/8 bg-white p-6 shadow-sm md:p-8">
+    <section className="rounded-3xl border border-[#3A2119]/10 bg-[#F7F3EC] p-6 shadow-sm md:p-8">
       {/* HEADER */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>

@@ -8,6 +8,7 @@ export interface Furniture {
 
   image_url?: string;
   product_url?: string;
+affiliate_url?: string;
 
   width_cm?: number;
   depth_cm?: number;
