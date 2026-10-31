@@ -6,11 +6,18 @@ import { ExternalLink, ArrowLeft } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { buildAffiliateUrl, groupByRetailer } from "@/lib/affiliateLinks";
 
+const formatPrice = (price: number) =>
+  `€${new Intl.NumberFormat("de-DE", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(price)}`;
+
 export default function CheckoutPage() {
   const items = useCartStore((s) => s.items);
   const remove = useCartStore((s) => s.remove);
+
   const grouped = groupByRetailer(items);
-  const total = items.reduce((sum, i) => sum + i.price, 0);
+  const total = items.reduce((sum, item) => sum + item.price, 0);
 
   if (items.length === 0) {
     return (
@@ -18,12 +25,14 @@ export default function CheckoutPage() {
         <h1 className="font-[family-name:var(--font-fraunces)] text-2xl text-[#3A2119]">
           Your list is empty
         </h1>
+
         <p className="mt-2 text-[#957662]">
           Add furniture from your AI design first.
         </p>
+
         <Link
           href="/ai"
-          className="mt-6 inline-block rounded-full bg-[#3A2119] px-6 py-3 text-sm font-semibold text-white hover:bg-[#3A2119]"
+          className="mt-6 inline-block rounded-full bg-[#3A2119] px-6 py-3 text-sm font-semibold text-white hover:bg-[#51573D]"
         >
           Back to AI Studio
         </Link>
@@ -44,29 +53,32 @@ export default function CheckoutPage() {
       <h1 className="mt-6 font-[family-name:var(--font-fraunces)] text-3xl text-[#3A2119]">
         Complete your purchase
       </h1>
+
       <p className="mt-2 text-[#957662]">
         Lomar doesn&apos;t process payment directly — you&apos;ll check out
         with each store, since every item is sold and shipped by them.
-        Total across stores: <strong>€{total.toLocaleString()}</strong>
+        Total across stores: <strong>{formatPrice(total)}</strong>
       </p>
 
       <div className="mt-10 space-y-8">
         {Object.entries(grouped).map(([retailer, retailerItems]) => {
           const retailerTotal = retailerItems.reduce(
-            (sum, i) => sum + i.price,
+            (sum, item) => sum + item.price,
             0
           );
+
           return (
             <section
               key={retailer}
-              className="rounded-3xl border border-[#3A2119]/8 bg-white p-6"
+              className="rounded-3xl border border-[#3A2119]/10 bg-white p-6"
             >
               <div className="flex items-center justify-between">
                 <h2 className="font-[family-name:var(--font-fraunces)] text-xl text-[#3A2119]">
                   {retailer}
                 </h2>
+
                 <span className="text-sm text-[#957662]">
-                  €{retailerTotal.toLocaleString()}
+                  {formatPrice(retailerTotal)}
                 </span>
               </div>
 
@@ -77,33 +89,42 @@ export default function CheckoutPage() {
                     className="flex items-center gap-3 rounded-xl bg-[#D2E2EC] p-3"
                   >
                     <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-white">
-                      {item.image_url && (
+                      {item.image_url ? (
                         <Image
                           src={item.image_url}
                           alt={item.name}
                           fill
                           sizes="48px"
+                          unoptimized
                           className="object-cover"
                         />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-xs text-[#957662]">
+                          No image
+                        </div>
                       )}
                     </div>
+
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-[#3A2119]">
                         {item.name}
                       </p>
+
                       <p className="text-xs text-[#957662]">
-                        €{item.price.toLocaleString()}
+                        {formatPrice(item.price)}
                       </p>
                     </div>
+
                     <a
                       href={buildAffiliateUrl(item)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex shrink-0 items-center gap-1 rounded-full bg-[#3A2119] px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-[#3A2119]"
+                      className="flex shrink-0 items-center gap-1 rounded-full bg-[#3A2119] px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-[#51573D]"
                     >
                       Buy
                       <ExternalLink className="h-3 w-3" />
                     </a>
+
                     <button
                       onClick={() => remove(item.id)}
                       className="shrink-0 text-xs text-[#957662] hover:text-[#B5533C]"
