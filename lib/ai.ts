@@ -123,12 +123,12 @@ Rules for selectedProductIds:
 `;
 
   const response = await client().chat.completions.create({
-    model: process.env.OPENAI_MODEL || "gpt-5",
-    
-    response_format: {
-      type: "json_object",
-    },
-    messages: [
+  model: process.env.OPENAI_ANALYSIS_MODEL || "gpt-5.6-luna",
+  reasoning_effort: "none" as any,   // TypeScript xato bersa "as any" qoladi; "none" qabul qilinmasa "low" qo'ying
+  verbosity: "low" as any,
+  max_completion_tokens: 600,
+  response_format: { type: "json_object" },
+  messages: [
       {
         role: "system",
         content:

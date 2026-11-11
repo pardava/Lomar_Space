@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 
 import { getCatalogCandidates, getProductsByIds } from "@/lib/catalog";
-
 import { analyzeRoom, renderRoom } from "@/lib/ai";
 
 export const runtime = "nodejs";
-
 export const maxDuration = 180;
 
 export async function POST(request: Request) {
+  const totalStart = performance.now();
+
   try {
     const body = await request.json();
 
@@ -19,10 +19,7 @@ export async function POST(request: Request) {
     const budget = body.budget || "";
 
     /*
-     * TEST MODE (optional):
-     * If the request contains productIds, exactly those Supabase products
-     * are used instead of the automatic candidate search.
-     * Normal frontend requests do not send productIds, so nothing changes for them.
+     * TEST MODE (optional)
      */
     const forcedIds: string[] | undefined =
       Array.isArray(body.productIds) && body.productIds.length > 0
@@ -35,9 +32,7 @@ export async function POST(request: Request) {
           success: false,
           error: "imageUrl is required",
         },
-        {
-          status: 400,
-        }
+        { status: 400 }
       );
     }
 
@@ -49,6 +44,8 @@ export async function POST(request: Request) {
 
     console.log("1. Downloading room image...");
     console.log("Cloudinary URL:", imageUrl);
+
+    const downloadStart = performance.now();
 
     const imageResponse = await fetch(imageUrl);
 
@@ -71,6 +68,13 @@ export async function POST(request: Request) {
       )} MB`
     );
 
+    console.log(
+      `⏱ Image download: ${(
+        (performance.now() - downloadStart) /
+        1000
+      ).toFixed(2)}s`
+    );
+
     /*
      * =====================================================
      * 2. LOAD REAL SUPABASE PRODUCTS
@@ -79,9 +83,24 @@ export async function POST(request: Request) {
 
     console.log("2. Loading furniture candidates...");
 
+    const candidatesStart = performance.now();
+
     const candidates = forcedIds
       ? await getProductsByIds(forcedIds)
-      : await getCatalogCandidates(roomType, style, color, budget, 80);
+      : await getCatalogCandidates(
+          roomType,
+          style,
+          color,
+          budget,
+          20
+        );
+
+    console.log(
+      `⏱ Catalog loading: ${(
+        (performance.now() - candidatesStart) /
+        1000
+      ).toFixed(2)}s`
+    );
 
     if (forcedIds) {
       console.log(`TEST MODE: using ${candidates.length} forced products`);
@@ -101,22 +120,31 @@ export async function POST(request: Request) {
 
     console.log("3. Starting room analysis...");
 
-   const plan = await analyzeRoom(
-  base64,
-  contentType,
-  style,
-  color,
-  budget,
-  candidates,
-  roomType
-);
+    const analysisStart = performance.now();
+
+    const plan = await analyzeRoom(
+      base64,
+      contentType,
+      style,
+      color,
+      budget,
+      candidates,
+      roomType
+    );
 
     console.log("4. Room analysis completed");
 
+    console.log(
+      `⏱ AI analysis: ${(
+        (performance.now() - analysisStart) /
+        1000
+      ).toFixed(2)}s`
+    );
+
     /*
-     * In test mode the selection is fixed to the requested products,
-     * regardless of what the analysis step picked.
+     * TEST MODE
      */
+
     if (forcedIds) {
       plan.selectedProductIds = forcedIds.filter((id) =>
         candidates.some((candidate) => candidate.id === id)
@@ -134,21 +162,22 @@ export async function POST(request: Request) {
 
     /*
      * =====================================================
-     * 4. LOAD EXACT PRODUCTS AGAIN FROM SUPABASE
-     *
-     * AI -> IDs
-     * IDs -> Supabase
-     * Supabase -> products
-     *
-     * These products are used for:
-     * A) image generation
-     * B) shopping list
+     * 4. LOAD EXACT SELECTED PRODUCTS
      * =====================================================
      */
 
     console.log("4. Loading EXACT selected products from Supabase...");
 
+    const productsStart = performance.now();
+
     const products = await getProductsByIds(plan.selectedProductIds);
+
+    console.log(
+      `⏱ Exact products loading: ${(
+        (performance.now() - productsStart) /
+        1000
+      ).toFixed(2)}s`
+    );
 
     console.log(`Matched REAL Supabase products: ${products.length}`);
 
@@ -179,12 +208,12 @@ export async function POST(request: Request) {
     /*
      * =====================================================
      * 5. GENERATE ROOM
-     *
-     * ONLY REAL SUPABASE PRODUCTS
      * =====================================================
      */
 
     console.log("5. Starting OpenAI image generation...");
+
+    const renderStart = performance.now();
 
     const generatedImage = await renderRoom(
       base64,
@@ -195,11 +224,16 @@ export async function POST(request: Request) {
 
     console.log("6. Room generation completed");
 
+    console.log(
+      `⏱ AI image render: ${(
+        (performance.now() - renderStart) /
+        1000
+      ).toFixed(2)}s`
+    );
+
     /*
      * =====================================================
      * 6. SINGLE SOURCE OF TRUTH
-     *
-     * SHOPPING LIST = products used in the render
      * =====================================================
      */
 
@@ -229,26 +263,33 @@ export async function POST(request: Request) {
 
     /*
      * =====================================================
-     * 7. RETURN
+     * 7. TOTAL TIME
+     * =====================================================
+     */
+
+    console.log(
+      `🚀 TOTAL GENERATION TIME: ${(
+        (performance.now() - totalStart) /
+        1000
+      ).toFixed(2)}s`
+    );
+
+    /*
+     * =====================================================
+     * 8. RETURN
      * =====================================================
      */
 
     return NextResponse.json({
       success: true,
-
       imageUrl: generatedImage,
 
       plan: {
         ...plan,
-
-        // Exact Supabase product IDs, not the AI's raw output.
         selectedProductIds: products.map((product) => product.id),
       },
 
-      // Frontend shopping list should use response.products.
       products: shoppingList,
-
-      // Same data, explicit name.
       shoppingList,
     });
   } catch (error) {
@@ -256,6 +297,13 @@ export async function POST(request: Request) {
 
     const message =
       error instanceof Error ? error.message : "Generation failed";
+
+    console.log(
+      `❌ TOTAL TIME BEFORE ERROR: ${(
+        (performance.now() - totalStart) /
+        1000
+      ).toFixed(2)}s`
+    );
 
     return NextResponse.json(
       {

@@ -1,0 +1,51 @@
+/* Merge into your existing src/index.css (keep the three @tailwind lines once). */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    background: #090B10;
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-lomar-bg font-sans text-body text-lomar-ivory antialiased;
+  }
+  ::selection {
+    background: rgba(200, 169, 126, 0.35);
+  }
+  :focus-visible {
+    outline: 2px solid #C8A97E;
+    outline-offset: 3px;
+  }
+}
+
+@layer components {
+  /* Base glass surface: 28px radius, 24px blur, 5% white */
+  .glass {
+    @apply rounded-lomar border border-white/10 bg-white/5 shadow-float backdrop-blur-lomar;
+  }
+  .glass-strong {
+    @apply rounded-lomar border border-white/15 bg-white/[0.08] shadow-float backdrop-blur-lomar;
+  }
+  /* Faint blueprint grid used by the holographic wireframe layer */
+  .holo-grid {
+    background-image:
+      linear-gradient(rgba(96, 165, 250, 0.09) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(96, 165, 250, 0.09) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
